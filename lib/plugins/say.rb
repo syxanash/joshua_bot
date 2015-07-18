@@ -11,9 +11,7 @@ class Say < Plugin
   end
 
   def do_stuff(match_results)
-    sentence_input = match_results[1]
-
-    sentence = sentence_input
+    sentence = match_results[1]
 
     sentence.gsub!("'", %q{\\\'})
     sentence.gsub!('"', %q{\\\"})
