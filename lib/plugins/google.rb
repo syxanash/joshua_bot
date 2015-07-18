@@ -1,3 +1,5 @@
+require 'open-uri'
+
 class Google < Plugin
   def command
     /\/google (.+) for (.+?)$/
@@ -9,7 +11,7 @@ class Google < Plugin
 
   def do_stuff(match_results)
 
-    stuff = match_results[1]
+    stuff = URI::encode(match_results[1])
     user = match_results[2]
 
     bot.api.sendMessage(chat_id: message.chat.id, text: "#{user}: http://lmgtfy.com/?q=#{stuff}")
