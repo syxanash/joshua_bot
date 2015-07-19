@@ -30,7 +30,7 @@ Telegram::Bot::Client.run(token) do |bot|
       puts "[?] now received: #{message.text}, from #{message.from.first_name}"
 
       # set the message for each plugin and check if that message
-      # correspond to a command for a plugin
+      # corresponds to a command for a plugin
       plugins.each do |plugin|
         plugin.message = message
         plugin_name = plugin.class.name.downcase
@@ -55,7 +55,7 @@ Telegram::Bot::Client.run(token) do |bot|
         bot.api.sendMessage(chat_id: message.chat.id, text: "pong")
       when '/about', "/about@#{bot_username}"
         text_value = <<-FOO
-I was created by my high master syx
+I was created by my lovely maker syx
 
 ⚠️ Three Laws of Robotics ⚠️
 ⚫️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
