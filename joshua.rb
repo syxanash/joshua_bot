@@ -35,12 +35,17 @@ Telegram::Bot::Client.run(token) do |bot|
         plugin.message = message
         plugin_name = plugin.class.name.downcase
 
-        if plugin.command.match(message.text)
-          # send the match result to do_stuff method if it needs to
-          # do something with a particular command requiring arguments
-          plugin.do_stuff(Regexp.last_match)
-        elsif /\/#{plugin_name}(@#{bot_username})?/ =~ message.text
-          plugin.show_usage
+        begin
+          if plugin.command.match(message.text)
+            # send the match result to do_stuff method if it needs to
+            # do something with a particular command requiring arguments
+            plugin.do_stuff(Regexp.last_match)
+          elsif /\/#{plugin_name}(@#{bot_username})?/ =~ message.text
+            plugin.show_usage
+          end
+        rescue => e
+          puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
+          bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 something went wrong with my brain operating system! 🚫")
         end
       end
 

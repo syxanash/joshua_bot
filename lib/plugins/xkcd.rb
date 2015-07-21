@@ -1,0 +1,35 @@
+require 'rest-client'
+require 'json'
+
+class Xkcd < Plugin
+  def command
+    /^\/xkcd\s?([0-9]*?)?$/
+  end
+
+  def show_usage
+    bot.api.sendMessage(chat_id: message.chat.id, text: "get xkcd comics with\n/xkcd to get the last comic\n/xkcd *comic number*")
+  end
+
+  def do_stuff(match_results)
+    number = match_results[1]
+
+    begin
+      if number.empty?
+        # get last comic
+        response = RestClient.get('https://xkcd.com/info.0.json')
+      else
+        # or get the one with specified number
+        response = RestClient.get("https://xkcd.com/#{number}/info.0.json")
+      end
+
+      decoded = JSON.parse(response)
+      system("wget #{decoded["img"]} -O xkcd.png")
+
+      bot.api.sendPhoto(chat_id: message.chat.id, photo: File.new('xkcd.png'))
+
+      File.delete('xkcd.png')
+    rescue
+      bot.api.sendMessage(chat_id: message.chat.id, text: "xkcd comic number you entered does not exist!")
+    end
+  end
+end
