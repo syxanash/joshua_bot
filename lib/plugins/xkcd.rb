@@ -23,7 +23,7 @@ class Xkcd < Plugin
       end
 
       decoded = JSON.parse(response)
-      system("wget #{decoded["img"]} -O xkcd.png")
+      system("wget \"#{decoded["img"]}\" -O xkcd.png")
 
       bot.api.sendPhoto(chat_id: message.chat.id, photo: File.new('xkcd.png'))
 
