@@ -15,8 +15,12 @@ class Xkcd < Plugin
 
     begin
       if number.empty?
-        # get last comic
+        # get the last comic published number
         response = RestClient.get('https://xkcd.com/info.0.json')
+        decoded = JSON.parse(response)
+        # generate random comic from 1 to the last comic published
+        random_comic = Random.rand(1..decoded["num"])
+        response = RestClient.get("https://xkcd.com/#{random_comic}/info.0.json")
       else
         # or get the one with specified number
         response = RestClient.get("https://xkcd.com/#{number}/info.0.json")
