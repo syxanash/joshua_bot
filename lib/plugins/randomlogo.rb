@@ -1,4 +1,5 @@
 # to use this plugin you need to install wget and imagemagick tool convert
+# HEY THERE, this plugin is no longer working, it needs to be modified!
 
 require 'json'
 require 'securerandom'

@@ -1,65 +1,80 @@
-require 'telegram/bot'
+require 'json'
 
+# load configuration file encoded in json format
+json_config_file = File.read("config.json")
+config_file = JSON.parse(json_config_file)
+
+token = config_file["token"]
+
+# worst solution ever I know but will be fixed!
+ENV["TELEGRAM_BOT_POOL_SIZE"] = config_file["pool_size"]
+
+# finally loading telegram bot wrapper class and plugins
+require 'telegram/bot'
 require './lib/Plugin'
 Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb'].each do |file|
   eval "#{File.read(file)}"
 end
 
-token = 'YOUR API TOKEN GOES IN HERE FELLAS!'
+# array created to keep track of the threads for each message
+threads = []
 
 # load all plugins into an array knowing the descendants of Plugin
 # abstract class
 plugins = []
 Plugin.descendants.each do |lib|
   plugins << lib.new
-  puts "[*] Plugin #{lib} loaded!"
+  puts "[*] Plugin #{lib} loaded..."
 end
 
 Telegram::Bot::Client.run(token) do |bot|
   puts "Bot started..."
 
-  # setting the bot object for all plugins
+  # set the bot object for all plugins
   plugins.each { |plugin| plugin.bot = bot }
 
   # searching for new messages
   bot.listen do |message|
     if message.date < Time.now.to_i - 10
-      puts "[?] #{message.text} received while you were away from #{message.from.first_name}"
+      puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
     else
-      bot_username = bot.api.getMe()["result"]["username"]
-      puts "[?] now received: #{message.text}, from #{message.from.first_name}"
+      # open a thread for every new message in order to answer to each user
+      # independently from each command.
+      threads << Thread.new do
+        bot_username = bot.api.getMe()["result"]["username"]
+        puts "[?] now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
 
-      # set the message for each plugin and check if that message
-      # corresponds to a command for a plugin
-      plugins.each do |plugin|
-        plugin.message = message
-        plugin_name = plugin.class.name.downcase
+        # set the message for each plugin and check if that message
+        # corresponds to a command for a plugin
+        plugins.each do |plugin|
+          plugin.message = message
+          plugin_name = plugin.class.name.downcase
 
-        begin
-          if plugin.command.match(message.text)
-            # send the match result to do_stuff method if it needs to
-            # do something with a particular command requiring arguments
-            plugin.do_stuff(Regexp.last_match)
-          elsif /\/#{plugin_name}(@#{bot_username})?/ =~ message.text
-            plugin.show_usage
+          begin
+            if plugin.command.match(message.text)
+              # send the match result to do_stuff method if it needs to
+              # do something with a particular command requiring arguments
+              plugin.do_stuff(Regexp.last_match)
+            elsif /\/#{plugin_name}(@#{bot_username})?/ =~ message.text
+              plugin.show_usage
+            end
+          rescue => e
+            puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
+            bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
           end
-        rescue => e
-          puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
-          bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 something went wrong with my brain operating system! 🚫")
         end
-      end
 
-      # if the message is not a command for any plugin then check with case
-      # statement for interpreations. This is used for simple basic commands
-      case message.text
-      when '/start', "/start@#{bot_username}"
-        bot.api.sendMessage(chat_id: message.chat.id, text: "Greetings, Professor Falken.")
-      when /josh/i
-        bot.api.sendMessage(chat_id: message.chat.id, text: "did somebody just say Joshua?")
-      when '/ping', "/ping@#{bot_username}"
-        bot.api.sendMessage(chat_id: message.chat.id, text: "pong")
-      when '/about', "/about@#{bot_username}"
-        text_value = <<-FOO
+        # if the message is not a command for any plugin then check with case
+        # statement for interpreations. This is used for simple basic commands
+        case message.text
+        when '/start', "/start@#{bot_username}"
+          bot.api.sendMessage(chat_id: message.chat.id, text: "Greetings, Professor Falken.")
+        when /josh/i
+          bot.api.sendMessage(chat_id: message.chat.id, text: "did somebody just say Joshua?")
+        when '/ping', "/ping@#{bot_username}"
+          bot.api.sendMessage(chat_id: message.chat.id, text: "pong")
+        when '/about', "/about@#{bot_username}"
+          text_value = <<-FOO
 I was created by my lovely maker syx
 
 ⚠️ Three Laws of Robotics ⚠️
@@ -67,13 +82,14 @@ I was created by my lovely maker syx
 ⚫️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
 ⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
 FOO
-        # See more: https://core.telegram.org/bots/api#replykeyboardhide
-        kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
-        bot.api.sendMessage(chat_id: message.chat.id, text: text_value, reply_markup: kb)
-      when '/stop', "/stop@#{bot_username}"
-        # See more: https://core.telegram.org/bots/api#replykeyboardhide
-        kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
-        bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
+          # See more: https://core.telegram.org/bots/api#replykeyboardhide
+          kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
+          bot.api.sendMessage(chat_id: message.chat.id, text: text_value, reply_markup: kb)
+        when '/stop', "/stop@#{bot_username}"
+          # See more: https://core.telegram.org/bots/api#replykeyboardhide
+          kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
+          bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
+        end
       end
     end
   end

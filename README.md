@@ -4,8 +4,7 @@ A *plugins* based bot for [Telegram](https://telegram.org/) messaging app writte
 
 ### cool, now how do I use this bot?
 
-Just enter your bot API token in *joshua.rb* in variable **token** (line 8) (a config file will be used for next versions maybe!). Oh and you've got
-to take a look at [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) if you haven't done it before!
+Just write your bot API token in *config.json*. By default *pool size* value is set to 4 because this bot works with threads, but the value can be changed in config.json. Oh and you've got to take a look at [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) if you haven't done it before!
 
 This bot requires the gem [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby).
 
