@@ -1,10 +1,13 @@
 require 'json'
 
 # load configuration file encoded in json format
-json_config_file = File.read("config.json")
-config_file = JSON.parse(json_config_file)
+config_file = JSON.parse(File.read("config.json"))
 
 token = config_file["token"]
+
+if token.empty?
+  abort "[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot"
+end
 
 # worst solution ever I know but will be fixed!
 ENV["TELEGRAM_BOT_POOL_SIZE"] = config_file["pool_size"]
