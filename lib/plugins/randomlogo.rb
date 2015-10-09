@@ -1,12 +1,11 @@
 # to use this plugin you need to install wget and imagemagick tool convert
-# HEY THERE, this plugin is no longer working, it needs to be modified!
 
 require 'json'
 require 'securerandom'
 require 'rest-client'
 
 class Logos
-  REMOTE_LOGOS_LIST_FILE = 'https://raw.githubusercontent.com/gilbarbara/logos/master/app/logos.json'
+  REMOTE_LOGOS_LIST_FILE = 'https://raw.githubusercontent.com/gilbarbara/logos/app/app/logos.json'
 
   def initialize(choices = 3)
     raise Exception, "choices have to be more than 2" if choices < 2
