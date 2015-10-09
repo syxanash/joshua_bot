@@ -71,7 +71,7 @@ class RandomLogo < Plugin
     #fr = Telegram::Bot::Types::ForceReply.new(force_reply: true)
 
     bot.api.sendPhoto(chat_id: message.chat.id, photo: File.new("#{correct_answer_file}.png"))
-    bot.api.sendMessage(chat_id: message.chat.id, text: "what is this logo? you have #{guess_seconds} seconds to guess!", reply_markup: keyboard_answers)
+    bot.api.sendMessage(chat_id: message.chat.id, text: "what is this logo? I'll give you the answer in #{guess_seconds} seconds, GO!", reply_markup: keyboard_answers)
     File.delete(correct_answer_file, "#{correct_answer_file}.png")
     puts "[!] waiting #{guess_seconds} before giving answer"
 

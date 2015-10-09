@@ -41,7 +41,7 @@ Telegram::Bot::Client.run(token) do |bot|
     if message.date < Time.now.to_i - 10
       puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
     else
-      # open a thread for every new message in order to answer to each user
+      # open a thread for every new message in order to answer to users
       # independently from each command.
       threads << Thread.new do
         bot_username = bot.api.getMe()["result"]["username"]
