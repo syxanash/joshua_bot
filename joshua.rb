@@ -10,6 +10,7 @@ if token.empty?
 end
 
 # worst solution ever I know but will be fixed!
+# get the pool size value. Useful when working with threads
 ENV["TELEGRAM_BOT_POOL_SIZE"] = config_file["pool_size"]
 
 # finally loading telegram bot wrapper class and plugins
@@ -18,6 +19,10 @@ require './lib/Plugin'
 Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb'].each do |file|
   eval "#{File.read(file)}"
 end
+
+# check if bot needs password to execute commands
+bot_password = config_file["password"]
+good_password = bot_password.empty?
 
 # array created to keep track of the threads for each message
 threads = []
@@ -41,6 +46,21 @@ Telegram::Bot::Client.run(token) do |bot|
     if message.date < Time.now.to_i - 10
       puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
     else
+      # if a password is defined in configuration file, check if user
+      # enters the password before giving further commands
+      if message.text == bot_password
+        good_password = true
+        bot.api.sendMessage(chat_id: message.chat.id, text: "Shall we play a game?")
+      end
+
+      if !good_password
+        bot.api.sendMessage(chat_id: message.chat.id, text: "LOGON:")
+
+        # jump to the next incoming message to safely skip the
+        # interpreations of the message just given
+        next
+      end
+
       # open a thread for every new message in order to answer to users
       # independently from each command.
       threads << Thread.new do
