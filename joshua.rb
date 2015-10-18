@@ -22,8 +22,8 @@ end
 
 # check if bot needs password to execute commands
 bot_password = config_file["password"]
-good_password = bot_password.empty?
-chat_id_authenticated = ''
+password_enabled = !bot_password.empty?
+chat_id_authenticated = {}
 
 # array created to keep track of the threads for each message
 threads = []
@@ -49,24 +49,28 @@ Telegram::Bot::Client.run(token) do |bot|
     else
       # if a password is defined in configuration file, check if user
       # enters the password before giving further commands
-      if !good_password
-        if message.text == bot_password
-          good_password = true
-          chat_id_authenticated = message.chat.id
-
-          bot.api.sendMessage(chat_id: message.chat.id, text: "Shall we play a game?")
-        else
-          bot.api.sendMessage(chat_id: message.chat.id, text: "LOGON:")
-
-          # jump to the next incoming message to safely skip the
-          # interpreations of the message just given
-          next
+      if password_enabled
+        # register the message chat id in order to have a unique value
+        # for each authorized chat with the bot
+        unless chat_id_authenticated.has_key?(message.chat.id)
+          chat_id_authenticated.merge({message.chat.id => false})
         end
-      elsif chat_id_authenticated != message.chat.id
-        # if password is correct but message.chat.id is different from the logged
-        # one then send a warning message
-        bot.api.sendMessage(chat_id: message.chat.id, text: "🚷 HUMANS ARE NOT ALLOWED 🚷")
-        next
+
+        puts "[?] chat id authorized: "
+        p chat_id_authenticated
+
+        if !chat_id_authenticated[message.chat.id]
+          if message.text == bot_password
+            chat_id_authenticated[message.chat.id] = true
+            bot.api.sendMessage(chat_id: message.chat.id, text: "Shall we play a game?")
+          else
+            bot.api.sendMessage(chat_id: message.chat.id, text: "LOGON:")
+
+            # jump to the next incoming message to safely skip the
+            # interpreations of the message just given
+            next
+          end
+        end
       end
 
       # open a thread for every new message in order to answer to users
