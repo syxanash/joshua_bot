@@ -1,12 +1,12 @@
 # Joshua
 
- ![WOPR computer](https://i.imgur.com/w4UBkRX.gif)
+![WOPR computer](https://i.imgur.com/w4UBkRX.gif)
 
 A *plugins* based bot for [Telegram](https://telegram.org/) messaging app written in *Ruby*.
 
 ### cool, now how do I use this bot?
 
-Just write your bot API token in *config.json*. By default *pool size* value is set to 4 because this bot works with threads, but the value can be changed in config.json. You can also set a password if your bot is supposed to be private so that before interpreting commands it asks to enter a password. Oh and you've got to take a look at [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) if you haven't done it before!
+Just write your bot API token in *config.json*. By default *pool size* value is set to 4 because this bot works with threads, but the value can be changed in config.json. You can also set a password if your bot is supposed to be private so that before interpreting commands it asks to enter a password. **Remember** only one user is supposed to use the bot if password is set. Oh and you've got to take a look at [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) if you haven't done it before!
 
 This bot requires the gem [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby).
 
