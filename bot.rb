@@ -78,15 +78,15 @@ Telegram::Bot::Client.run(token) do |bot|
       threads << Thread.new do
         bot_username = bot.api.getMe()["result"]["username"]
         puts "[?] now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
-
-        # set the message for each plugin and check if that message
-        # corresponds to a command for a plugin
         plugins.each do |plugin|
-          plugin.message = message
           plugin_name = plugin.class.name.downcase
 
           begin
             if plugin.command.match(message.text)
+              # set the message for each plugin and check if that message
+              # corresponds to a command for a plugin
+              plugin.message = message
+              
               # send the match result to do_stuff method if it needs to
               # do something with a particular command requiring arguments
               plugin.do_stuff(Regexp.last_match)
