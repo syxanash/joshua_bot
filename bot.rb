@@ -1,17 +1,17 @@
 require 'json'
 
 # load configuration file encoded in json format
-config_file = JSON.parse(File.read("config.json"))
+config_file = JSON.parse(File.read('config.json'))
 
-token = config_file["token"]
+token = config_file['token']
 
 if token.empty?
-  abort "[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot"
+  abort '[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
 end
 
 # worst solution ever I know but will be fixed!
 # get the pool size value. Useful when working with threads
-ENV["TELEGRAM_BOT_POOL_SIZE"] = config_file["pool_size"]
+ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 
 # finally loading telegram bot wrapper class and plugins
 require 'telegram/bot'
@@ -21,7 +21,7 @@ Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb'].each do |file|
 end
 
 # check if bot needs password to execute commands
-bot_password = config_file["password"]
+bot_password = config_file['password']
 password_enabled = !bot_password.empty?
 chat_id_authenticated = {}
 
@@ -37,7 +37,7 @@ Plugin.descendants.each do |lib|
 end
 
 Telegram::Bot::Client.run(token) do |bot|
-  puts "Bot started..."
+  puts 'Bot started...'
 
   # set the bot object for all plugins
   plugins.each { |plugin| plugin.bot = bot }
@@ -52,19 +52,19 @@ Telegram::Bot::Client.run(token) do |bot|
       if password_enabled
         # register the message chat id in order to have a unique value
         # for each authorized chat with the bot
-        unless chat_id_authenticated.has_key?(message.chat.id)
-          chat_id_authenticated.merge({message.chat.id => false})
+        unless chat_id_authenticated.key?(message.chat.id)
+          chat_id_authenticated.merge({ message.chat.id => false })
         end
 
-        puts "[?] chat id authorized: "
+        puts '[?] chat id authorized: '
         p chat_id_authenticated
 
-        if !chat_id_authenticated[message.chat.id]
+        unless chat_id_authenticated[message.chat.id]
           if message.text == bot_password
             chat_id_authenticated[message.chat.id] = true
-            bot.api.sendMessage(chat_id: message.chat.id, text: "Shall we play a game?")
+            bot.api.sendMessage(chat_id: message.chat.id, text: 'Shall we play a game?')
           else
-            bot.api.sendMessage(chat_id: message.chat.id, text: "LOGON:")
+            bot.api.sendMessage(chat_id: message.chat.id, text: 'LOGON:')
 
             # jump to the next incoming message to safely skip the
             # interpreations of the message just given
@@ -76,17 +76,16 @@ Telegram::Bot::Client.run(token) do |bot|
       # open a thread for every new message in order to answer to users
       # independently from each command.
       threads << Thread.new do
-        bot_username = bot.api.getMe()["result"]["username"]
+        bot_username = bot.api.getMe['result']['username']
         puts "[?] now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
         plugins.each do |plugin|
+          # set the message for each plugin and check if that message
+          # corresponds to a command for a plugin
+          plugin.message = message
           plugin_name = plugin.class.name.downcase
 
           begin
             if plugin.command.match(message.text)
-              # set the message for each plugin and check if that message
-              # corresponds to a command for a plugin
-              plugin.message = message
-              
               # send the match result to do_stuff method if it needs to
               # do something with a particular command requiring arguments
               plugin.do_stuff(Regexp.last_match)
@@ -103,11 +102,11 @@ Telegram::Bot::Client.run(token) do |bot|
         # statement for interpreations. This is used for simple basic commands
         case message.text
         when '/start', "/start@#{bot_username}"
-          bot.api.sendMessage(chat_id: message.chat.id, text: "Greetings, Professor Falken.")
+          bot.api.sendMessage(chat_id: message.chat.id, text: 'Greetings, Professor Falken.')
         when /josh/i
-          bot.api.sendMessage(chat_id: message.chat.id, text: "did somebody just say Joshua?")
+          bot.api.sendMessage(chat_id: message.chat.id, text: 'did somebody just say Joshua?')
         when '/ping', "/ping@#{bot_username}"
-          bot.api.sendMessage(chat_id: message.chat.id, text: "pong")
+          bot.api.sendMessage(chat_id: message.chat.id, text: 'pong')
         when '/about', "/about@#{bot_username}"
           text_value = <<-FOO
 I was created by my lovely maker syx

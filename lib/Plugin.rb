@@ -23,12 +23,12 @@ class Plugin
     # this method when overridden must contain the string or regexp
     # to invoke the plugin command
 
-    raise NotImplementedError, 'You must implement command method'
+    fail NotImplementedError, 'You must implement command method'
   end
 
-  def do_stuff(match_results)
+  def do_stuff(_match_results)
     # must contain the body of your plugins using telegram api
 
-    raise NotImplementedError, 'You must implement do_stuff method'
+    fail NotImplementedError, 'You must implement do_stuff method'
   end
 end
