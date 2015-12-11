@@ -20,6 +20,12 @@ Take a look at some plugins in `lib/plugins` folder like *diceroll.rb* or *fortu
 
 Remember that argument **match_results** for **do_stuff** method can be used if your plugin needs to parse parameters and that the list of values to be parsed starts from 1. (this one will be fixed)
 
+### Spioncino bot :boom:
+
+[![demo](http://img.youtube.com/vi/irJc_imOiuo/0.jpg)](http://www.youtube.com/watch?v=irJc_imOiuo)
+
+Check out an awesome usage of this bot as a simple surveillance system for your house on branch [spioncino](https://github.com/syxanash/joshua_bot/tree/spioncino)
+
 ### TO FIX
 
 A lot of stuff, but have no time... one day... perhaps...
