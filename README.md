@@ -28,7 +28,7 @@ Check out an awesome usage of this bot as a simple surveillance system for your 
 
 ### TO FIX
 
-A lot of stuff, but have no time... one day... perhaps...
+A lot of stuff, but have no time... one day... maybe...
 
 ### Author
 
