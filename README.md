@@ -1,7 +1,5 @@
 # Joshua
 
-![WOPR computer](https://i.imgur.com/w4UBkRX.gif)
-
 A *plugins* based bot for [Telegram](https://telegram.org/) messaging app written in *Ruby*.
 
 ### cool, now how do I use this bot?
