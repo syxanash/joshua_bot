@@ -85,12 +85,16 @@ Telegram::Bot::Client.run(token) do |bot|
           plugin_name = plugin.class.name.downcase
 
           begin
-            if plugin.command.match(message.text)
-              # send the match result to do_stuff method if it needs to
-              # do something with a particular command requiring arguments
-              plugin.do_stuff(Regexp.last_match)
-            elsif /\/#{plugin_name}(@#{bot_username})?/ =~ message.text
-              plugin.show_usage
+            if message.text != nil then
+              if message.text.include? "@#{bot_username}" then
+                message.text.slice! "@#{bot_username}"
+              end
+
+              if plugin.command.match(message.text)
+                # send the match result to do_stuff method if it needs to
+                # do something with a particular command requiring arguments
+                plugin.do_stuff(Regexp.last_match)
+              end
             end
           rescue => e
             puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
@@ -106,7 +110,7 @@ Telegram::Bot::Client.run(token) do |bot|
         when /josh/i
           bot.api.sendMessage(chat_id: message.chat.id, text: 'did somebody just say Joshua?')
         when '/ping', "/ping@#{bot_username}"
-          bot.api.sendMessage(chat_id: message.chat.id, text: 'pong')
+          bot.api.send_message(chat_id: message.chat.id, text: 'pong')
         when '/about', "/about@#{bot_username}"
           text_value = <<-FOO
 I was created by my lovely maker syx
@@ -117,11 +121,11 @@ I was created by my lovely maker syx
 ⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
 FOO
           # See more: https://core.telegram.org/bots/api#replykeyboardhide
-          kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
+          kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           bot.api.sendMessage(chat_id: message.chat.id, text: text_value, reply_markup: kb)
         when '/stop', "/stop@#{bot_username}"
           # See more: https://core.telegram.org/bots/api#replykeyboardhide
-          kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
+          kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
         end
       end
