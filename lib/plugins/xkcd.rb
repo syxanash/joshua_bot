@@ -29,7 +29,7 @@ class Xkcd < Plugin
       decoded = JSON.parse(response)
       system("wget \"#{decoded["img"]}\" -O xkcd.png")
 
-      bot.api.sendPhoto(chat_id: message.chat.id, photo: File.new('xkcd.png'))
+      bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new('xkcd.png', 'image/png'))
 
       File.delete('xkcd.png')
     rescue

@@ -70,14 +70,14 @@ class RandomLogo < Plugin
     keyboard_answers = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: answers.each_slice(1).to_a, one_time_keyboard: true)
     #fr = Telegram::Bot::Types::ForceReply.new(force_reply: true)
 
-    bot.api.sendPhoto(chat_id: message.chat.id, photo: File.new("#{correct_answer_file}.png"))
+    bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{correct_answer_file}.png", 'image/png'))
     bot.api.sendMessage(chat_id: message.chat.id, text: "what is this logo? I'll give you the answer in #{guess_seconds} seconds, GO!", reply_markup: keyboard_answers)
     File.delete(correct_answer_file, "#{correct_answer_file}.png")
     puts "[!] waiting #{guess_seconds} before giving answer"
 
     sleep(guess_seconds)
 
-    kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
+    kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
     bot.api.sendMessage(chat_id: message.chat.id, text: "correct answer was: #{correct_answer_name}✔️\n🔎check out #{correct_answer_name} at #{correct_answer_url}", reply_markup: kb)
   end
 end

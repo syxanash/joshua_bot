@@ -1,4 +1,4 @@
-# because of "say" utility this plugin only works on OSX
+# this plugin uses "say" utility thus it only works on OSX
 # also you have to install opusenc tool in order to send ogg files
 
 class Say < Plugin

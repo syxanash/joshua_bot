@@ -94,7 +94,7 @@ Telegram::Bot::Client.run(token) do |bot|
                 # send the match result to do_stuff method if it needs to
                 # do something with a particular command requiring arguments
                 plugin.do_stuff(Regexp.last_match)
-              elsif /\/#{plugin_name}(@#{bot_username})?/ =~ message.text 
+              elsif /\/#{plugin_name}?/ =~ message.text 
                 plugin.show_usage
               end
             end

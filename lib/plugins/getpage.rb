@@ -15,7 +15,7 @@ class Getpage < Plugin
     puts "[!] fething the image from http2pic"
     system("wget \"#{link}\" -O #{temp_file}")
 
-    bot.api.sendPhoto(chat_id: message.chat.id, photo: File.new(temp_file))
+    bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_file, 'image/jpeg'))
     bot.api.sendMessage(chat_id: message.chat.id, text: "🔎check out http2pic at https://http2pic.haschek.at")
 
     File.delete(temp_file)
