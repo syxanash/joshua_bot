@@ -28,6 +28,9 @@ chat_id_authenticated = {}
 # array created to keep track of the threads for each message
 threads = []
 
+# hash which contains user id and plugin waiting for user input
+waiting_input = {}
+
 # load all plugins into an array knowing the descendants of Plugin
 # abstract class
 plugins = []
@@ -44,38 +47,38 @@ Telegram::Bot::Client.run(token) do |bot|
 
   # searching for new messages
   bot.listen do |message|
-    if message.date < Time.now.to_i - 10
-      puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
-    else
-      # if a password is defined in configuration file, check if user
-      # enters the password before giving further commands
-      if password_enabled
-        # register the message chat id in order to have a unique value
-        # for each authorized chat with the bot
-        unless chat_id_authenticated.key?(message.chat.id)
-          chat_id_authenticated.merge({ message.chat.id => false })
-        end
+    # open a thread for every new message in order to answer to users
+    # independently from each command.
+    threads << Thread.new do
+      if message.date < Time.now.to_i - 10
+        puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
+      else
+        # if a password is defined in configuration file, check if user
+        # enters the password before giving further commands
+        if password_enabled
+          # register the message chat id in order to have a unique value
+          # for each authorized chat with the bot
+          unless chat_id_authenticated.key?(message.chat.id)
+            chat_id_authenticated.merge({ message.chat.id => false })
+          end
 
-        puts '[?] chat id authorized: '
-        p chat_id_authenticated
+          puts '[?] chat id authorized: '
+          p chat_id_authenticated
 
-        unless chat_id_authenticated[message.chat.id]
-          if message.text == bot_password
-            chat_id_authenticated[message.chat.id] = true
-            bot.api.sendMessage(chat_id: message.chat.id, text: ">#{"\n" * 50}Shall we play a game?")
-          else
-            bot.api.sendMessage(chat_id: message.chat.id, text: 'LOGON:')
+          unless chat_id_authenticated[message.chat.id]
+            if message.text == bot_password
+              chat_id_authenticated[message.chat.id] = true
+              bot.api.sendMessage(chat_id: message.chat.id, text: ">#{"\n" * 50}Shall we play a game?")
+            else
+              bot.api.sendMessage(chat_id: message.chat.id, text: 'LOGON:')
 
-            # jump to the next incoming message to safely skip the
-            # interpreations of the message just given
-            next
+              # jump to the next incoming message to safely skip the
+              # interpreations of the message just given
+              next
+            end
           end
         end
-      end
 
-      # open a thread for every new message in order to answer to users
-      # independently from each command.
-      threads << Thread.new do
         bot_username = bot.api.getMe['result']['username']
         puts "[?] now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
         plugins.each do |plugin|
@@ -85,19 +88,41 @@ Telegram::Bot::Client.run(token) do |bot|
           plugin_name = plugin.class.name.downcase
 
           begin
-            if message.text != nil then
-              if message.text.include? "@#{bot_username}" then
-                message.text.slice! "@#{bot_username}"
-              end
+            # check if a plugin is waiting for a user to give an input
+            if waiting_input[message.chat.id] == plugin.class.name.to_s
+              response = plugin.do_answer(message.text)
 
-              if plugin.command.match(message.text)
-                # send the match result to do_stuff method if it needs to
-                # do something with a particular command requiring arguments
-                plugin.do_stuff(Regexp.last_match)
-              elsif /\/#{plugin_name}?/ =~ message.text 
-                plugin.show_usage
+              # if do answer returns true then stop the user from
+              # waiting new inputs
+              if response == Plugin::STOP_REPLYING
+                waiting_input.tap { |hs| hs.delete(message.chat.id) }
+              end
+            else
+              unless message.text.nil?
+                if message.text.include? "@#{bot_username}"
+                  message.text.slice! "@#{bot_username}"
+                end
+
+                if plugin.command.match(message.text)
+                  # send the match result to do_stuff method if it needs to
+                  # do something with a particular command requiring arguments
+                  response = plugin.do_stuff(Regexp.last_match)
+
+                  # do stuff returns a hash and a flag
+                  # if the flag is set to true which is != nil then
+                  # merge the hash with the waiting input
+
+                  if response == Plugin::MUST_REPLY
+                    waiting_input.merge!({ message.chat.id => plugin.class.name.to_s })
+                  end
+                elsif %r{\/#{plugin_name}?} =~ message.text
+                  plugin.show_usage
+                end
               end
             end
+          rescue NotImplementedError
+            bot.api.sendMessage(chat_id: message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
+            waiting_input.tap { |hs| hs.delete(message.chat.id) }
           rescue => e
             puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
             bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
