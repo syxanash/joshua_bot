@@ -25,7 +25,5 @@ class Jokes < Plugin
     decoded = JSON.parse(json_resp)
 
     bot.api.sendMessage(chat_id: message.chat.id, text: CGI.unescapeHTML(decoded["value"]["joke"]))
-
-    MUST_REPLY
   end
 end

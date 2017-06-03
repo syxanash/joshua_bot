@@ -15,22 +15,15 @@ Take a look at some plugins in `lib/plugins` folder like *diceroll.rb* or *fortu
 * A plugin must have a **command** method which returns a regexp or a string to parse the command that will invoke the plugin
 * a **do_stuff** method which contains the body of your plugin
 * optionally, but required for plugins like *say.rb* or *google.rb*, a **show_usage** method that will appear in case a user invokes a command that needs parameters or perhaps was invoked specifying the bot name like `plugin_command@bot_name` in a group chat.
+* if a plugin requires further inputs (after giving the first command) write the code inside the method do_answer (check out plugin `morra.rb` for a practical example)
 
-Remember that argument **match_results** for **do_stuff** method can be used if your plugin needs to parse parameters and that the list of values to be parsed starts from 1. (this one will be fixed)
+Remember that argument **match_results** for **do_stuff** method can be used if your plugin needs to parse parameters and that the list of values to be parsed starts from 1.
 
 ### Spioncino bot :boom:
 
 [![demo](http://img.youtube.com/vi/irJc_imOiuo/0.jpg)](http://www.youtube.com/watch?v=irJc_imOiuo)
 
 Check out an awesome usage of this bot as a simple surveillance system for your house on branch [spioncino](https://github.com/syxanash/joshua_bot/tree/spioncino)
-
-### TO FIX
-
-A lot of stuff, but have no time... one day... maybe...
-
-### Author
-
-Me of course!
 
 ### License
 

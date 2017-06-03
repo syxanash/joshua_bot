@@ -17,7 +17,7 @@ ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 require 'telegram/bot'
 require './lib/Plugin'
 Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb'].each do |file|
-  eval "#{File.read(file)}"
+  eval File.read(file).to_s
 end
 
 # check if bot needs password to execute commands
@@ -25,43 +25,24 @@ bot_password = config_file['password']
 password_enabled = !bot_password.empty?
 chat_id_authenticated = {}
 
-# array created to keep track of the threads for each message
-threads = []
-
-# hash which contains user id and plugin waiting for user input
+# hash structure which contains user chat id and instance of the plugin
+# which needs a reply from the user
 waiting_input = {}
-
-# load all plugins into an array knowing the descendants of Plugin
-# abstract class
-plugins = []
-Plugin.descendants.each do |lib|
-  plugins << lib.new
-  puts "[*] Plugin #{lib} loaded..."
-end
 
 Telegram::Bot::Client.run(token) do |bot|
   puts 'Bot started...'
 
-  # set the bot object for all plugins
-  plugins.each { |plugin| plugin.bot = bot }
-
   # searching for new messages
   bot.listen do |message|
-    # open a thread for every new message in order to answer to users
+    # open a thread for every new message to answer users
     # independently from each command.
-    threads << Thread.new do
+    Thread.new do
       if message.date < Time.now.to_i - 10
         puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
       else
         # if a password is defined in configuration file, check if user
         # enters the password before giving further commands
         if password_enabled
-          # register the message chat id in order to have a unique value
-          # for each authorized chat with the bot
-          unless chat_id_authenticated.key?(message.chat.id)
-            chat_id_authenticated.merge({ message.chat.id => false })
-          end
-
           puts '[?] chat id authorized: '
           p chat_id_authenticated
 
@@ -81,24 +62,34 @@ Telegram::Bot::Client.run(token) do |bot|
 
         bot_username = bot.api.getMe['result']['username']
         puts "[?] now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
-        plugins.each do |plugin|
-          # set the message for each plugin and check if that message
-          # corresponds to a command for a plugin
+
+        Plugin.descendants.each do |lib|
+          # for each message create an instance of the plugin library
+          plugin = lib.new
+
+          # set bot and message object for each plugin
+          # and save the name of the plugin
+
+          plugin.bot = bot
           plugin.message = message
-          plugin_name = plugin.class.name.downcase
+          plugin_name = plugin.class.name
 
           begin
-            # check if a plugin is waiting for a user to give an input
-            if waiting_input[message.chat.id] == plugin.class.name.to_s
-              response = plugin.do_answer(message.text)
+            # check if a plugin is waiting for a user to give a reply
+            if waiting_input[message.chat.id].class.name == plugin_name
+              # restore old plugin instance to send reply to the user
+              old_plugin_instance = waiting_input[message.chat.id]
 
-              # if do answer returns true then stop the user from
-              # waiting new inputs
+              response = old_plugin_instance.do_answer(message.text)
+
+              # if plugin doesn't need further replies then stop the plugin
+              # from waiting new inputs
               if response == Plugin::STOP_REPLYING
-                waiting_input.tap { |hs| hs.delete(message.chat.id) }
+                waiting_input.delete(message.chat.id)
               end
             else
               unless message.text.nil?
+                # beautify message sent with @ format (used in groups)
                 if message.text.include? "@#{bot_username}"
                   message.text.slice! "@#{bot_username}"
                 end
@@ -108,21 +99,22 @@ Telegram::Bot::Client.run(token) do |bot|
                   # do something with a particular command requiring arguments
                   response = plugin.do_stuff(Regexp.last_match)
 
-                  # do stuff returns a hash and a flag
-                  # if the flag is set to true which is != nil then
-                  # merge the hash with the waiting input
-
+                  # if plugin needs a reply store user chat id and plugin
+                  # instance inside a hash structure
                   if response == Plugin::MUST_REPLY
-                    waiting_input.merge!({ message.chat.id => plugin.class.name.to_s })
+                    waiting_input[message.chat.id] = plugin
                   end
-                elsif %r{\/#{plugin_name}?} =~ message.text
+                elsif %r{\/#{plugin_name.downcase}?} =~ message.text
                   plugin.show_usage
                 end
               end
             end
           rescue NotImplementedError
             bot.api.sendMessage(chat_id: message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
-            waiting_input.tap { |hs| hs.delete(message.chat.id) }
+
+            # in case a do_answer wasn't implemented for the plugin
+            # remove the user from the waiting input list
+            waiting_input.delete(message.chat.id)
           rescue => e
             puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
             bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
