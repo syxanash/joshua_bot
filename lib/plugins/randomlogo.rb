@@ -37,7 +37,7 @@ end
 
 class RandomLogo < Plugin
   def command
-    '/randomlogo'
+    /^\/randomlogo$/
   end
 
   def initialize

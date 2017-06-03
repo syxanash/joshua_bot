@@ -1,8 +1,8 @@
 require 'telegram/bot'
 
 class Plugin
-  MUST_REPLY = 1
-  STOP_REPLYING = 2
+  MUST_REPLY = 'MUST_REPLY'.freeze
+  STOP_REPLYING = 'STOP_REPLYING'.freeze
 
   attr_accessor :bot, :message
 
