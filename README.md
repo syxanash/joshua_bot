@@ -10,7 +10,7 @@ This bot requires the gem [telegram-bot-ruby](https://github.com/atipugin/telegr
 
 ### super cool, how do I add new plugins?
 
-Take a look at some plugins in `lib/plugins` folder like `diceroll.rb*`, `fortune.rb` and `morra.rb` these are very simple plugins that can be easily used as examples for writing your first plugin.
+Take a look at some plugins in `lib/plugins` folder like `diceroll.rb`, `fortune.rb` and `morra.rb` these are very simple plugins that can be easily used as examples for writing your first plugin.
 
 Keep in mind that:
 * A plugin must have a **command** method which returns a regexp or a string which will be used to interpret the command that invokes the plugin
