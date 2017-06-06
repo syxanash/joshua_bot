@@ -10,14 +10,13 @@ This bot requires the gem [telegram-bot-ruby](https://github.com/atipugin/telegr
 
 ### super cool, how do I add new plugins?
 
-Take a look at some plugins in `lib/plugins` folder like *diceroll.rb* or *fortune.rb* these are very simple plugins that can be easily hacked.
+Take a look at some plugins in `lib/plugins` folder like `diceroll.rb*`, `fortune.rb` and `morra.rb` these are very simple plugins that can be easily used as examples for writing your first plugin.
 
-* A plugin must have a **command** method which returns a regexp or a string to parse the command that will invoke the plugin
+Keep in mind that:
+* A plugin must have a **command** method which returns a regexp or a string which will be used to interpret the command that invokes the plugin
 * a **do_stuff** method which contains the body of your plugin
-* optionally, but required for plugins like *say.rb* or *google.rb*, a **show_usage** method that will appear in case a user invokes a command that needs parameters or perhaps was invoked specifying the bot name like `plugin_command@bot_name` in a group chat.
+* optionally, but required for plugins like *say.rb* or *google.rb*, a **show_usage** method that will appear in case a user invokes a command that needs parameters.
 * if a plugin requires further inputs (after giving the first command) write the code inside the method **do_answer** (check out plugin `morra.rb` for a practical example)
-
-Remember that argument **match_results** for **do_stuff** method can be used if your plugin needs to parse parameters and that the list of values to be parsed starts from 1.
 
 ### Spioncino bot :boom:
 

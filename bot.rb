@@ -87,26 +87,32 @@ Telegram::Bot::Client.run(token) do |bot|
               if response == Plugin::STOP_REPLYING
                 waiting_input.delete(message.chat.id)
               end
-            else
-              unless message.text.nil?
-                # beautify message sent with @ format (used in groups)
-                if message.text.include? "@#{bot_username}"
-                  message.text.slice! "@#{bot_username}"
+
+            # if the current user has a plugin waiting for a reply skip
+            # the interpretation of other commands
+            elsif !waiting_input[message.chat.id].nil?
+              next
+            elsif !message.text.nil?
+              # beautify message sent with @ format (used in groups)
+              if message.text.include? "@#{bot_username}"
+                message.text.slice! "@#{bot_username}"
+              end
+
+              if plugin.command.match(message.text)
+                # send the match result to do_stuff method if it needs to
+                # do something with a particular command requiring arguments
+                response = plugin.do_stuff(Regexp.last_match)
+
+                # if plugin needs a reply then store user chat id and plugin
+                # instance inside a hash structure
+                if response == Plugin::MUST_REPLY
+                  waiting_input[message.chat.id] = plugin
                 end
 
-                if plugin.command.match(message.text)
-                  # send the match result to do_stuff method if it needs to
-                  # do something with a particular command requiring arguments
-                  response = plugin.do_stuff(Regexp.last_match)
-
-                  # if plugin needs a reply store user chat id and plugin
-                  # instance inside a hash structure
-                  if response == Plugin::MUST_REPLY
-                    waiting_input[message.chat.id] = plugin
-                  end
-                elsif %r{\/#{plugin_name.downcase}?} =~ message.text
-                  plugin.show_usage
-                end
+              # if the plugin main regexp does't match the message
+              # then show the plugin usage example
+              elsif %r{\/#{plugin_name.downcase}?} =~ message.text
+                plugin.show_usage
               end
             end
           rescue NotImplementedError
@@ -139,11 +145,12 @@ I was created by my lovely maker syx
 ⚫️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
 ⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
 FOO
-          # See more: https://core.telegram.org/bots/api#replykeyboardhide
-          kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-          bot.api.sendMessage(chat_id: message.chat.id, text: text_value, reply_markup: kb)
+          bot.api.sendMessage(chat_id: message.chat.id, text: text_value)
         when '/stop', "/stop@#{bot_username}"
-          # See more: https://core.telegram.org/bots/api#replykeyboardhide
+          # remove user from the waiting input list and remove custom keyboard
+          # if it was previously enabled by some plugin
+
+          waiting_input.delete(message.chat.id)
           kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
         end
