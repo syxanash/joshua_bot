@@ -34,7 +34,7 @@ class LyricsFinder
     # to the artist entered by the user then lyrics is not found
 
     if song_found.nil? ||
-       (song_found.resource['primary_artist']['name'].similar(track_artist) < PERCENTAGE_OF_SIMILARITY)
+       (song_found.resource['primary_artist']['name'].downcase.similar(track_artist.downcase) < PERCENTAGE_OF_SIMILARITY)
       raise LyricsNotFound, "Lyrics not found for #{track_name}"
     end
 
