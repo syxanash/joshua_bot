@@ -1,4 +1,9 @@
 require 'json'
+require 'logger'
+
+logger = Logger.new(STDOUT)
+
+logger.info 'Reading bot configuration file...'
 
 # load configuration file encoded in json format
 config_file = JSON.parse(File.read('config.json'))
@@ -16,7 +21,16 @@ ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 # finally loading telegram bot wrapper class and plugins
 require 'telegram/bot'
 require './lib/Plugin'
-Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb'].each do |file|
+
+plugins_list = Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb']
+plugins_list_size = plugins_list.length
+
+logger.info "Found #{plugins_list_size} plugins to load"
+
+plugins_list.each_with_index do |file, i|
+  file_name = File.basename file, '.rb'
+
+  logger.info "[#{i + 1}/#{plugins_list_size}] Loading #{file_name.capitalize}..."
   eval File.read(file).to_s
 end
 
@@ -30,7 +44,7 @@ chat_id_authenticated = {}
 waiting_input = {}
 
 Telegram::Bot::Client.run(token) do |bot|
-  puts 'Bot started...'
+  logger.info 'Bot started'
 
   # searching for new messages
   bot.listen do |message|
@@ -38,13 +52,12 @@ Telegram::Bot::Client.run(token) do |bot|
     # independently from each command.
     Thread.new do
       if message.date < Time.now.to_i - 10
-        puts "[?] #{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
+        logger.info "#{message.text} received while you were away from #{message.from.first_name}, in #{message.chat.id}"
       else
         # if a password is defined in configuration file, check if user
         # enters the password before giving further commands
         if password_enabled
-          puts '[?] chat id authorized: '
-          p chat_id_authenticated
+          logger.info "Chat id authorized: #{chat_id_authenticated}"
 
           unless chat_id_authenticated[message.chat.id]
             if message.text == bot_password
@@ -61,7 +74,7 @@ Telegram::Bot::Client.run(token) do |bot|
         end
 
         bot_username = bot.api.getMe['result']['username']
-        puts "[?] now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
+        logger.info "Now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
 
         Plugin.descendants.each do |lib|
           # for each message create an instance of the plugin library
@@ -122,7 +135,7 @@ Telegram::Bot::Client.run(token) do |bot|
             # remove the user from the waiting input list
             waiting_input.delete(message.chat.id)
           rescue => e
-            puts "[!] Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
+            logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
             bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
           end
         end
