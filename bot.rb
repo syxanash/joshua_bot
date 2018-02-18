@@ -1,7 +1,8 @@
 require 'json'
 require 'logger'
+require 'SecureRandom'
 
-logger = Logger.new(STDOUT)
+logger = Logger.new("/tmp/joshua_bot_#{SecureRandom.hex(6)}.log")
 
 logger.info 'Reading bot configuration file...'
 
