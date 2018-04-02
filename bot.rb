@@ -1,6 +1,6 @@
 require 'json'
 require 'logger'
-require 'SecureRandom'
+require 'securerandom'
 
 logger = Logger.new("/tmp/joshua_bot_#{SecureRandom.hex(6)}.log")
 
