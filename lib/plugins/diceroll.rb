@@ -1,6 +1,6 @@
 class DiceRoll < Plugin
   def command
-    /^\/diceroll\s?([0-9]*?)?$/
+    /^\/diceroll\s?([1-9]*?)?$/
   end
 
   def show_usage
