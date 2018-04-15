@@ -2,7 +2,7 @@ require 'json'
 require 'logger'
 require 'securerandom'
 
-logger = Logger.new("/tmp/joshua_bot_#{SecureRandom.hex(6)}.log")
+logger = Logger.new(STDOUT)
 
 logger.info 'Reading bot configuration file...'
 
@@ -44,6 +44,10 @@ chat_id_authenticated = {}
 # which needs a reply from the user
 waiting_input = {}
 
+# structure which contains the id of chats that enabled the random thoughts
+all_chats = {}
+first_message = true
+
 Telegram::Bot::Client.run(token) do |bot|
   logger.info 'Bot started'
 
@@ -72,6 +76,11 @@ Telegram::Bot::Client.run(token) do |bot|
               next
             end
           end
+        end
+        
+        # when user send message in a chat automatically enable the random message
+        unless all_chats.include? message.chat.id
+          all_chats[message.chat.id] = 'enabled'
         end
 
         bot_username = bot.api.getMe['result']['username']
@@ -146,6 +155,12 @@ Telegram::Bot::Client.run(token) do |bot|
         case message.text
         when '/start', "/start@#{bot_username}"
           bot.api.sendMessage(chat_id: message.chat.id, text: 'Greetings, Professor Falken.')
+        when '/disable_thoughts', "/disable_thoughts@#{bot_username}"
+          bot.api.sendMessage(chat_id: message.chat.id, text: "guess I won't bother you no more 😢")
+          all_chats[message.chat.id] = 'disabled'
+        when '/enable_thoughts', "/enable_thoughts@#{bot_username}"
+          bot.api.sendMessage(chat_id: message.chat.id, text: "I'll bother you from time to time! 😎")
+          all_chats[message.chat.id] = 'enabled'
         when /josh/i
           bot.api.sendMessage(chat_id: message.chat.id, text: 'did somebody just say Joshua?')
         when '/ping', "/ping@#{bot_username}"
@@ -155,11 +170,13 @@ Telegram::Bot::Client.run(token) do |bot|
 I was created by my lovely maker syx
 
 ⚠️ Three Laws of Robotics ⚠️
-⚫️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
-⚫️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
-⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+➖ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+➖ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
+➖ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+
+Checkout my sourcecode at: github.com/syxanash/joshua_bot
 FOO
-          bot.api.sendMessage(chat_id: message.chat.id, text: text_value)
+          bot.api.sendMessage(chat_id: message.chat.id, text: text_value, disable_web_page_preview: true)
         when '/stop', "/stop@#{bot_username}"
           # remove user from the waiting input list and remove custom keyboard
           # if it was previously enabled by some plugin
@@ -168,7 +185,32 @@ FOO
           kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
         end
+      end # close if for the seconds to wait before replying to message 
+    end # end of main thread
+    
+    if first_message
+      first_message = false
+
+      # open a thread to send to all chats a random message every 2 to 5 hours
+      Thread.new do
+        loop do
+          logger.info 'Sending fortune to a random chat...'
+
+          random_thought = `/usr/local/bin/fortune`
+          
+          # send the random fortune only to the chat that enabled the feature
+          all_chats.each do |chat_index, config|
+            if config == "enabled"
+              bot.api.sendMessage(chat_id: chat_index, text: random_thought)
+            end
+          end
+
+          random_sec = 3600 * Random.rand(2..5)
+          logger.info "Next random fortune in #{random_sec / 3600} hours"
+
+          sleep(random_sec)
+        end
       end
     end
-  end
-end
+  end # bot listen
+end # bot client run
