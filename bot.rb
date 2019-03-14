@@ -148,6 +148,10 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.sendMessage(chat_id: message.chat.id, text: 'Greetings, Professor Falken.')
         when /josh/i
           bot.api.sendMessage(chat_id: message.chat.id, text: 'did somebody just say Joshua?')
+        when '/users', "/users@#{bot_username}"
+          if password_enabled
+            bot.api.sendMessage(chat_id: message.chat.id, text: "Current active chats: #{chat_id_authenticated.size}")
+          end
         when '/ping', "/ping@#{bot_username}"
           bot.api.send_message(chat_id: message.chat.id, text: 'pong')
         when '/about', "/about@#{bot_username}"
