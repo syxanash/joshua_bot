@@ -23,9 +23,12 @@ ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 require 'telegram/bot'
 require './lib/Plugin'
 
-plugins_list = Dir[File.dirname(__FILE__) + '/lib/plugins/*.rb']
+plugins_list = Dir[File.dirname(__FILE__) + "/lib/plugins/*.rb"]
+plugins_list += Dir[File.dirname(__FILE__) + "/lib/plugins/#{config_file['plugin_folder']}/*.rb"]
+
 plugins_list_size = plugins_list.length
 
+logger.info "Loading #{config_file['plugin_folder']} plugins..."
 logger.info "Found #{plugins_list_size} plugins to load"
 
 plugins_list.each_with_index do |file, i|
