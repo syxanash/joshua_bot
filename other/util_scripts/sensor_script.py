@@ -7,7 +7,7 @@ def write_log(file_name, value):
     out_file.close()
 
 if len(sys.argv) != 2:
-    print "[!] please enter a output filename!"
+    print("[!] please enter a output filename!")
     exit(1)
 
 pir = MotionSensor(4)

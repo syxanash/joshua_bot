@@ -143,6 +143,17 @@ class NoirSensor < Plugin
     bot.api.sendMessage(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
   end
 
+  def take_photo(num = 5)
+    (0...num).each do |i|
+      temp_name = 'temp_photo.jpg'
+
+      system("python lib/plugins/util_scripts/camera_script.py")
+
+      bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_name, 'image/jpeg'))
+      File.delete(temp_name)
+    end
+  end
+
   def take_video(seconds = 10)
     fail Exception, 'must give from 1 to 69 seconds!' if seconds > 60
 

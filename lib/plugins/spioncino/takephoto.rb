@@ -1,10 +1,10 @@
-class NoirSnap < Plugin
+class TakePhoto < Plugin
   def command
-    /(^\/noirsnap$|photo)/
+    /(^\/takephoto$|photo)/
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "type /noirsnap")
+    bot.api.sendMessage(chat_id: message.chat.id, text: "type /takephoto")
   end
 
   def do_stuff(match_results)
@@ -16,7 +16,7 @@ class NoirSnap < Plugin
     
       File.delete 'temp_photo.jpg'
     rescue
-      bot.api.sendMessage(chat_id: message.chat.id, text: "fuck this shit man!")
+      bot.api.sendMessage(chat_id: message.chat.id, text: "Something went wrong while taking the picture!")
     end
    
   end

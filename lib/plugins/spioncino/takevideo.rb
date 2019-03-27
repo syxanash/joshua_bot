@@ -1,10 +1,10 @@
-class NoirVideo < Plugin
+class TakeVideo < Plugin
   def command
-    /(^\/noirvideo$|video)/
+    /(^\/takevideo$|video)/
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "type /noirvideo")
+    bot.api.sendMessage(chat_id: message.chat.id, text: "type /takevideo")
   end
 
   def do_stuff(match_results)
