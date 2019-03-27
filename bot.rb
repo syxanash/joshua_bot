@@ -21,7 +21,7 @@ ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 
 # finally loading telegram bot wrapper class and plugins
 require 'telegram/bot'
-require './lib/Plugin'
+require './lib/plugin'
 
 plugins_list = Dir[File.dirname(__FILE__) + "/lib/plugins/*.rb"]
 plugins_list += Dir[File.dirname(__FILE__) + "/lib/plugins/#{config_file['plugin_folder']}/*.rb"]
