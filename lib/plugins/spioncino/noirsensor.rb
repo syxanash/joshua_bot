@@ -31,7 +31,7 @@ class NoirSensor < Plugin
 
     # number of signal to ignore from PIR
     # before grabbing photos and video
-    max_counter = 5
+    max_counter = 8
 
     # check if commands entered is valid
     unless status.value?(switch_value)
@@ -97,7 +97,8 @@ class NoirSensor < Plugin
           tries = 3
 
           begin
-            take_photo()
+            take_video(5)
+            take_video(5)
             take_video()
           rescue
             if (tries -= 1) >= 0
@@ -140,17 +141,6 @@ class NoirSensor < Plugin
 
     puts '[?] Motion Sensor plugin daemon deleted!'
     bot.api.sendMessage(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
-  end
-
-  def take_photo(num = 5)
-    (0...num).each do |i|
-      temp_name = 'temp_photo.jpg'
-
-      system("python other/util_scripts/camera_script.py")
-
-      bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_name, 'image/jpeg'))
-      File.delete(temp_name)
-    end
   end
 
   def take_video(seconds = 10)
