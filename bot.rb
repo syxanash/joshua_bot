@@ -24,7 +24,10 @@ require 'telegram/bot'
 require './lib/plugin'
 
 plugins_list = Dir[File.dirname(__FILE__) + "/lib/plugins/*.rb"]
-plugins_list += Dir[File.dirname(__FILE__) + "/lib/plugins/#{config_file['plugin_folder']}/*.rb"]
+
+unless config_file['plugin_folder'].empty?
+  plugins_list += Dir[File.dirname(__FILE__) + "/lib/plugins/#{config_file['plugin_folder']}/*.rb"]
+end
 
 plugins_list_size = plugins_list.length
 
