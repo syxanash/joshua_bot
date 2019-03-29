@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'json'
 
-class Extip < Plugin
+class Extip < AbsPlugin
   def command
     /^\/extip$/
   end

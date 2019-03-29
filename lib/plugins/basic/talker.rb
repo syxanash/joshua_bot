@@ -1,4 +1,4 @@
-class Talker < Plugin
+class Talker < AbsPlugin
   def command
     /^\/talker\s(.*?)\s(.*?)$/
   end

@@ -1,4 +1,4 @@
-class Morra < Plugin
+class Morra < AbsPlugin
   def initialize
     @values = %w(🗿 📄 ✂️)
   end

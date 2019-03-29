@@ -1,4 +1,4 @@
-class Getpage < Plugin
+class Getpage < AbsPlugin
   def command
     /^\/getpage (.+?)$/
   end

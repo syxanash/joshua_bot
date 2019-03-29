@@ -21,7 +21,7 @@ ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 
 # finally loading telegram bot wrapper class and plugins
 require 'telegram/bot'
-require './lib/plugin'
+require './lib/abs_plugin'
 
 plugins_list = Dir[File.dirname(__FILE__) + "/lib/plugins/*.rb"]
 
@@ -83,7 +83,7 @@ Telegram::Bot::Client.run(token) do |bot|
         bot_username = bot.api.getMe['result']['username']
         logger.info "Now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
 
-        Plugin.descendants.each do |lib|
+        AbsPlugin.descendants.each do |lib|
           # for each message create an instance of the plugin library
           plugin = lib.new
 
@@ -104,7 +104,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
               # if plugin doesn't need further replies then stop the plugin
               # from waiting new inputs
-              if response == Plugin::STOP_REPLYING
+              if response == AbsPlugin::STOP_REPLYING
                 waiting_input.delete(message.chat.id)
               end
 
@@ -125,7 +125,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
                 # if plugin needs a reply then store user chat id and plugin
                 # instance inside a hash structure
-                if response == Plugin::MUST_REPLY
+                if response == AbsPlugin::MUST_REPLY
                   waiting_input[message.chat.id] = plugin
                 end
 

@@ -2,7 +2,7 @@ require 'rest-client'
 require 'open-uri'
 require 'json'
 
-class Movie < Plugin
+class Movie < AbsPlugin
   def command
     /^\/movie (.+?)$/
   end

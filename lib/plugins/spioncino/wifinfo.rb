@@ -1,4 +1,4 @@
-class Wifinfo < Plugin
+class Wifinfo < AbsPlugin
   def command
     /^\/wifinfo$/
   end

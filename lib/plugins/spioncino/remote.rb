@@ -1,4 +1,4 @@
-class Remote < Plugin
+class Remote < AbsPlugin
   def initialize
     @main_reply = {:confirm => '', :action => ''}
 

@@ -1,4 +1,4 @@
-class TakeVideo < Plugin
+class TakeVideo < AbsPlugin
   def command
     /(^\/takevideo$|video)/
   end

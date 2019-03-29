@@ -52,7 +52,7 @@ class LyricsFinder
   end
 end
 
-class Lyrics < Plugin
+class Lyrics < AbsPlugin
   def initialize
     # find our more on how to get a Genius Access Token on: https://genius.com/api-clients
     @finder = LyricsFinder.new('YOUR GENIUS API TOKEN GOES HERE!!!')

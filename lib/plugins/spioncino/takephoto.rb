@@ -1,4 +1,4 @@
-class TakePhoto < Plugin
+class TakePhoto < AbsPlugin
   def command
     /(^\/takephoto$|photo)/
   end

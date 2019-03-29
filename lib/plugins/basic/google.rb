@@ -1,6 +1,6 @@
 require 'open-uri'
 
-class Google < Plugin
+class Google < AbsPlugin
   def command
     /\/google (.+) for (.+?)$/
   end

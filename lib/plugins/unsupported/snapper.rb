@@ -1,4 +1,4 @@
-class Snapper < Plugin
+class Snapper < AbsPlugin
   def command
     /^\/snapper?$/
   end

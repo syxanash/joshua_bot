@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'json'
 
-class Xkcd < Plugin
+class Xkcd < AbsPlugin
   def command
     /^\/xkcd\s?([0-9]*?)?$/
   end

@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'cgi'
 
-class Isup < Plugin
+class Isup < AbsPlugin
   def command
     /\/isup\s?(.+?)$/
   end

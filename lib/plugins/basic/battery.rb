@@ -1,6 +1,6 @@
 # this plugin works on OSX
 
-class Battery < Plugin
+class Battery < AbsPlugin
   def command
     '/battery'
   end

@@ -2,7 +2,7 @@ require 'rest-client'
 require 'open-uri'
 require 'json'
 
-class Artist < Plugin
+class Artist < AbsPlugin
   def command
     /^\/artist (.+?)$/
   end

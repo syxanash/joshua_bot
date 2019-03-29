@@ -1,6 +1,6 @@
 require 'arduino_firmata'
 
-class MotionSensor < Plugin
+class MotionSensor < AbsPlugin
   @video_stopped = false
 
   MOTIONSENSOR_STATE_FILE = '/tmp/motion_sensor.log'

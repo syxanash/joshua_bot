@@ -1,4 +1,4 @@
-class Uptime < Plugin
+class Uptime < AbsPlugin
     def command
       /^\/uptime$/
     end

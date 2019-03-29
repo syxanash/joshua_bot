@@ -1,6 +1,6 @@
 require 'telegram/bot'
 
-class Plugin
+class AbsPlugin
   MUST_REPLY = 'MUST_REPLY'.freeze
   STOP_REPLYING = 'STOP_REPLYING'.freeze
 

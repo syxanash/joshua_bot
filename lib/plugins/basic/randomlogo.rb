@@ -35,7 +35,7 @@ class Logos
   end
 end
 
-class RandomLogo < Plugin
+class RandomLogo < AbsPlugin
   def command
     /^\/randomlogo$/
   end

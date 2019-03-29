@@ -1,4 +1,4 @@
-class Say < Plugin
+class Say < AbsPlugin
     def command
       /^\/say ([a-zA-Z0-9\s|éèùòàì|\?\!|\'|\,|\:|\.|\"|\;]*?)$/
     end

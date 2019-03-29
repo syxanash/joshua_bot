@@ -1,7 +1,7 @@
 # to use this plugin you need fortune program on your OS
 # type: "brew install fortune" to install on macOS
 
-class Fortune < Plugin
+class Fortune < AbsPlugin
   def command
     /^\/fortune$/
   end

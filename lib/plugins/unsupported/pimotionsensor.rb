@@ -3,7 +3,7 @@
 # This plugin also requires avconv, streamer and fswebcam:
 # sudo apt-get install libav-tools streamer fswebcam
 
-class PiMotionSensor < Plugin
+class PiMotionSensor < AbsPlugin
   MOTIONSENSOR_STATE_FILE = '/tmp/motion_sensor.log'
   SENSOR_OUTPUT_FILE = '/tmp/sensor_output.txt'
 

@@ -1,4 +1,4 @@
-class DiceRoll < Plugin
+class DiceRoll < AbsPlugin
   def command
     /^\/diceroll\s?([1-9]*?)?$/
   end

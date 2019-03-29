@@ -2,7 +2,7 @@ require 'rest-client'
 require 'json'
 require 'cgi'
 
-class Jokes < Plugin
+class Jokes < AbsPlugin
   def command
     /\/jokes\s?(.*?)$/
   end

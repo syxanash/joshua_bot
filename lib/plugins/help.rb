@@ -1,4 +1,4 @@
-class Help < Plugin
+class Help < AbsPlugin
   def command
     /\/help$/
   end
@@ -10,7 +10,7 @@ class Help < Plugin
   def do_stuff(match_results)
 
     text_to_show = "You can give me the following commands:\n\n"
-    plugin_classes = Plugin.descendants
+    plugin_classes = AbsPlugin.descendants
 
     plugin_classes.each do |plugin_name|
       text_to_show += "/#{plugin_name.to_s.downcase}\n"

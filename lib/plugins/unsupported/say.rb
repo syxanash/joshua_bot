@@ -1,7 +1,7 @@
 # this plugin uses "say" utility thus it only works on OSX
 # also you have to install opusenc tool in order to send ogg files
 
-class Say < Plugin
+class Say < AbsPlugin
   def command
     /^\/say ([a-zA-Z0-9\s|éèùòàì|\?\!|\'|\,|\:|\.|\"|\;]*?)$/
   end
