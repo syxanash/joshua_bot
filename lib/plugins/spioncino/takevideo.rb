@@ -14,7 +14,7 @@ class TakeVideo < AbsPlugin
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
     bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new(temp_name + '.mp4', 'video/mp4'))
-    
+
     File.delete(temp_name + '.h264', temp_name + '.mp4')
   end
 end
