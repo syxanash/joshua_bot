@@ -1,7 +1,5 @@
-# this plugin is an alternative to motionsensor.rb which will work on
-# Raspberry Pi. The other plugin only works with Arduino (Firmata)
-# This plugin also requires avconv, streamer and fswebcam:
-# sudo apt-get install libav-tools streamer fswebcam
+# This plugin also requires avconv, streamer
+# sudo apt-get install libav-tools streamer
 
 class NoirSensor < AbsPlugin
   MOTIONSENSOR_STATE_FILE = '/tmp/motion_sensor.log'
