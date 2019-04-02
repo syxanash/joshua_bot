@@ -1,19 +1,17 @@
-# this plugin is an alternative to motionsensor.rb which will work on
-# Raspberry Pi. The other plugin only works with Arduino (Firmata)
-# This plugin also requires avconv, streamer and fswebcam:
-# sudo apt-get install libav-tools streamer fswebcam
+# This plugin also requires avconv, streamer
+# sudo apt-get install libav-tools streamer
 
-class PiMotionSensor < AbsPlugin
+class Spione < AbsPlugin
   MOTIONSENSOR_STATE_FILE = '/tmp/motion_sensor.log'
   SENSOR_OUTPUT_FILE = '/tmp/sensor_output.txt'
 
   def command
-    /^\/pimotionsensor (.+?)$/
+    /^\/spione (.+?)$/
   end
 
   def show_usage
     system("wget http://i.imgur.com/WFumRlB.png -O scheme.png")
-    bot.api.sendMessage(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /pimotionsensor *switch value*\nswitch values: on/off/idle/status or status to get the current status")
+    bot.api.sendMessage(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /spione *switch value*\nswitch values: on/off/idle/status or status to get the current status")
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new('scheme.png', 'image/png'))
     File.delete('scheme.png')
   end
@@ -31,7 +29,7 @@ class PiMotionSensor < AbsPlugin
 
     # number of signal to ignore from PIR
     # before grabbing photos and video
-    max_counter = 3
+    max_counter = 8
 
     # check if commands entered is valid
     unless status.value?(switch_value)
@@ -94,8 +92,20 @@ class PiMotionSensor < AbsPlugin
 
         if counter >= max_counter
 
-          take_photo()
-          take_video()
+          tries = 3
+
+          begin
+            take_video(5)
+            take_video(5)
+            take_video()
+          rescue
+            if (tries -= 1) >= 0
+                sleep 3
+                retry
+            else
+                puts '[!] SOMETHING WRONG HAPPENED WITH DEVICE!'
+            end
+          end
 
           puts '[?] resetting counter...'
 
@@ -103,14 +113,7 @@ class PiMotionSensor < AbsPlugin
         end
       elsif plugin_process == status[:idle]
         if pir_state == '1'
-          temp_name = "#{Time.now.to_i}"
-
-          system("espeak -s 120 \"Welcome home maker\" --stdout > #{temp_name}first_audio.wav")
-          system("opusenc #{temp_name}first_audio.wav #{temp_name}_audio.ogg")
-
-               bot.api.sendAudio(chat_id: message.chat.id, audio: Faraday::UploadIO.new("#{temp_name}_audio.ogg", 'ogg/vorbis'))
-
-          File.delete("#{temp_name}first_audio.wav", "#{temp_name}_audio.ogg")
+          take_photo(1)
 
           break
         end
@@ -121,7 +124,7 @@ class PiMotionSensor < AbsPlugin
       # before repeating the loop, read if motionsensor state
       # has changed while running the plugin then wait 1 second
       plugin_process = File.read(MOTIONSENSOR_STATE_FILE)
-      
+
       sleep 1
     end
 
@@ -138,11 +141,11 @@ class PiMotionSensor < AbsPlugin
     bot.api.sendMessage(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
   end
 
-  def take_photo(num = 3)
+  def take_photo(num = 5)
     (0...num).each do |i|
-      temp_name = "#{Time.now.to_i}_spy_photo.jpg"
+      temp_name = 'temp_photo.jpg'
 
-      system("fswebcam --save #{temp_name} -d /dev/video0 --skip 30 -r 640x480")
+      system("python lib/plugins/util_scripts/camera_script.py")
 
       bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_name, 'image/jpeg'))
       File.delete(temp_name)
@@ -154,10 +157,11 @@ class PiMotionSensor < AbsPlugin
 
     temp_name = "#{Time.now.to_i}_spy_video"
 
-    system("streamer -q -c /dev/video0 -f rgb24 -r 3 -t 00:00:#{seconds} -o #{temp_name}.avi")
-    system("avconv -i #{temp_name}.avi -acodec libfaac -b:a 128k -vcodec mpeg4 -b:v 1200k -flags +aic+mv4 #{temp_name}.mp4")
+    system("raspivid -o #{temp_name}.h264 -w 1280 -h 720 -t #{seconds}000")
+    system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
     bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new(temp_name + '.mp4', 'video/mp4'))
-    File.delete(temp_name + '.mp4', temp_name + '.avi')
+    
+    File.delete(temp_name + '.h264', temp_name + '.mp4')
   end
 end
