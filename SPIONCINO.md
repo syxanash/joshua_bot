@@ -62,7 +62,7 @@ Command  | Description
 
 The scheme is fairly easy to build, you can follow many tutorials online as well, basically the PIR will be connected to the Raspberry Pi using the **GPIO** ports as follows:
 
-<img src="other/doc_assets/scheme.png" alt="scheme" style="width:350px;"/>
+<img src="other/doc_assets/scheme.png" alt="scheme" width="417" height="562" />
 
 _(scheme taken from [hackster.io](https://www.hackster.io/ediwang/raspberry-pi-surveillance-camera-with-linux-and-azure-318f40))_
 
