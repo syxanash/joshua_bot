@@ -145,7 +145,7 @@ class Spione < AbsPlugin
     (0...num).each do |i|
       temp_name = 'temp_photo.jpg'
 
-      system("python lib/plugins/util_scripts/camera_script.py")
+      system("python other/util_scripts/camera_script.py")
 
       bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_name, 'image/jpeg'))
       File.delete(temp_name)
