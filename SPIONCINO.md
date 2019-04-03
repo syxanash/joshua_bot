@@ -44,10 +44,10 @@ Here is a list of available commands for the main surveillance plugin:
 
 Command  | Description
 ---------|------------
-/spione **on** | Activates the plugin. It will start to detect the movement of objects using the PIR sensor and will send you pictures or videos when something moves in the room
-/spione **off** | turns off the surveillance plugin and will stop sending pictures and videos in case it previously detected moving objects
-/spione **idle** | checks if something has moved from the PIR sensor and will send just one photo subsequently it will turn off the plugin automatically
-/spione **status** | returns the status of the surveillance plugin which could be `on`, `off`, `idle`
+/spione **on**<img width=100/>| Activates the plugin. It will start to detect the movement of objects using the PIR sensor and will send you pictures or videos when something moves in the room
+/spione **off** <img width=100/>| turns off the surveillance plugin and will stop sending pictures and videos in case it previously detected moving objects
+/spione **idle** <img width=100/>| checks if something has moved from the PIR sensor and will send just one photo subsequently it will turn off the plugin automatically
+/spione **status** <img width=100/>| returns the status of the surveillance plugin which could be `on`, `off`, `idle`
 
 Other plugins:
 
