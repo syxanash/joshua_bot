@@ -1,9 +1,6 @@
 require 'telegram/bot'
 
 class AbsPlugin
-  MUST_REPLY = 'MUST_REPLY'.freeze
-  STOP_REPLYING = 'STOP_REPLYING'.freeze
-
   attr_accessor :bot, :message
 
   # the following two methods will be used to know the plugins name which
@@ -33,11 +30,5 @@ class AbsPlugin
     # must contain the body of your plugins using telegram api
 
     raise NotImplementedError, 'You must implement do_stuff method'
-  end
-
-  def do_answer(_answer)
-    # if plugin needs answer from user, code must be placed here
-
-    raise NotImplementedError, 'You must implement do_answer method'
   end
 end

@@ -1,8 +1,11 @@
 require 'json'
 require 'logger'
 require 'securerandom'
+# remove pp
+require 'pp'
 
-logger = Logger.new("/tmp/joshua_bot_#{SecureRandom.hex(6)}.log")
+logger = Logger.new(STDOUT)
+# logger = Logger.new("/tmp/joshua_bot_#{SecureRandom.hex(6)}.log")
 
 logger.info 'Reading bot configuration file...'
 
@@ -46,10 +49,6 @@ bot_password = config_file['password']
 password_enabled = !bot_password.empty?
 chat_id_authenticated = {}
 
-# hash structure which contains user chat id and instance of the plugin
-# which needs a reply from the user
-waiting_input = {}
-
 Telegram::Bot::Client.run(token) do |bot|
   logger.info 'Bot started'
 
@@ -80,6 +79,24 @@ Telegram::Bot::Client.run(token) do |bot|
           end
         end
 
+        session_buffer = {
+          plugin: '',
+          is_open: false,
+          content: ''
+        }
+        buffer_file_name = "/tmp/joshua_#{message.chat.id}_buffer.json"
+
+        if File.file?(buffer_file_name)
+          logger.info "Reading the buffer already created in #{buffer_file_name}..."
+
+          buffer_file_content = File.read(buffer_file_name)
+          session_buffer = JSON.parse(buffer_file_content)
+        else
+          File.write(buffer_file_name, session_buffer.to_json)
+
+          logger.info "Created a new buffer file #{message.chat.id}"
+        end
+
         bot_username = bot.api.getMe['result']['username']
         logger.info "Now received: #{message.text}, from #{message.from.first_name}, in #{message.chat.id}"
 
@@ -95,23 +112,13 @@ Telegram::Bot::Client.run(token) do |bot|
           plugin_name = plugin.class.name
 
           begin
-            # check if a plugin is waiting for a user to give a reply
-            if waiting_input[message.chat.id].class.name == plugin_name
-              # restore old plugin instance to send reply to the user
-              old_plugin_instance = waiting_input[message.chat.id]
+            if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
+              logger.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
 
-              response = old_plugin_instance.do_answer(message.text)
+              session_buffer['content'] = message.text
+              session_buffer['is_open'] = false
 
-              # if plugin doesn't need further replies then stop the plugin
-              # from waiting new inputs
-              if response == AbsPlugin::STOP_REPLYING
-                waiting_input.delete(message.chat.id)
-              end
-
-            # if the current user has a plugin waiting for a reply skip
-            # the interpretation of other commands
-            elsif !waiting_input[message.chat.id].nil?
-              next
+              File.write(buffer_file_name, session_buffer.to_json)
             elsif !message.text.nil?
               # beautify message sent with @ format (used in groups)
               if message.text.include? "@#{bot_username}"
@@ -121,13 +128,7 @@ Telegram::Bot::Client.run(token) do |bot|
               if plugin.command.match(message.text)
                 # send the match result to do_stuff method if it needs to
                 # do something with a particular command requiring arguments
-                response = plugin.do_stuff(Regexp.last_match)
-
-                # if plugin needs a reply then store user chat id and plugin
-                # instance inside a hash structure
-                if response == AbsPlugin::MUST_REPLY
-                  waiting_input[message.chat.id] = plugin
-                end
+                plugin.do_stuff(Regexp.last_match)
 
               # if the plugin main regexp does't match the message
               # then show the plugin usage example
@@ -137,10 +138,6 @@ Telegram::Bot::Client.run(token) do |bot|
             end
           rescue NotImplementedError
             bot.api.sendMessage(chat_id: message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
-
-            # in case a do_answer wasn't implemented for the plugin
-            # remove the user from the waiting input list
-            waiting_input.delete(message.chat.id)
           rescue => e
             logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
             bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
@@ -171,10 +168,6 @@ I was created by my lovely maker syx
 FOO
           bot.api.sendMessage(chat_id: message.chat.id, text: text_value)
         when '/stop', "/stop@#{bot_username}"
-          # remove user from the waiting input list and remove custom keyboard
-          # if it was previously enabled by some plugin
-
-          waiting_input.delete(message.chat.id)
           kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
         end
