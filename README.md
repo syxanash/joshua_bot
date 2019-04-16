@@ -114,6 +114,8 @@ In this case **DiceRoll** plugin can be invoked by using the command `/diceroll`
 
 ### do_answer
 
+**(This solution is hacky and ugly will be fixed [HERE](https://github.com/syxanash/joshua_bot/issues/7))**
+
 You can create plugins which will reply to user's inputs by returning the constant `MUST_REPLY` in the method `do_stuff()`. In this case the method `do_answer` will be invoked subsequently and you can place in here the code which will handle the user's answer.
 
 Take a look at the plugin **Morra**, in this case the plugin sends a message and expects a reply, an emoji containig 🗿 📄 ✂️, so we return the constant `MUST_REPLY` at the end of the method. After the user replied with a text message the `do_answer` method will manage the answer.
