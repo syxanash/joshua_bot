@@ -84,7 +84,7 @@ Telegram::Bot::Client.run(token) do |bot|
           is_open: false,
           content: ''
         }
-        buffer_file_name = "/tmp/joshua_#{message.chat.id}_buffer.json"
+        buffer_file_name = AbsPlugin.get_buffer_filename(message.chat.id)
 
         if File.file?(buffer_file_name)
           logger.info "Reading the buffer already created in #{buffer_file_name}..."
