@@ -119,6 +119,10 @@ Telegram::Bot::Client.run(token) do |bot|
               session_buffer['is_open'] = false
 
               File.write(buffer_file_name, session_buffer.to_json)
+            elsif session_buffer['is_open']
+              # if the current user has a plugin waiting for a reply skip	
+              # the interpretation of other commands
+              next
             elsif !message.text.nil?
               # beautify message sent with @ format (used in groups)
               if message.text.include? "@#{bot_username}"

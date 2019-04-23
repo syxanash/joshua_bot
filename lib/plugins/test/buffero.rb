@@ -34,9 +34,11 @@ class Buffero < AbsPlugin
     # read the buffer until it's closed
 
     loop do
-      puts 'waiting for user to reply...'
-
       buffer_file_content = File.read(buffer_file_name)
+
+      if buffer_file_content.empty?
+        next
+      end
 
       session_buffer = JSON.parse(buffer_file_content)
 
@@ -45,8 +47,6 @@ class Buffero < AbsPlugin
         puts session_buffer['content']
         break
       end
-
-      sleep(0.5)
     end
 
     File.write(buffer_file_name, {
