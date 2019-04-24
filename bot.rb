@@ -1,11 +1,15 @@
 require 'json'
 require 'logger'
 require 'securerandom'
-# remove pp
-require 'pp'
+require 'FileUtils'
 
-logger = Logger.new(STDOUT)
-# logger = Logger.new("/tmp/joshua_bot_#{SecureRandom.hex(6)}.log")
+bot_temp_directory = '/tmp/joshua_bot_tmp'
+
+# create a folder in tmp directory for this bot
+FileUtils.rm_rf bot_temp_directory if File.directory?(bot_temp_directory)
+FileUtils.mkdir_p bot_temp_directory
+
+logger = Logger.new("#{bot_temp_directory}/bot_#{SecureRandom.hex(6)}.log")
 
 logger.info 'Reading bot configuration file...'
 
@@ -84,8 +88,9 @@ Telegram::Bot::Client.run(token) do |bot|
           is_open: false,
           content: ''
         }
-        buffer_file_name = AbsPlugin.get_buffer_filename(message.chat.id)
+        buffer_file_name = "#{bot_temp_directory}/joshua_#{message.chat.id}_buffer.json"
 
+        # initialize the buffer file for the current chat id
         if File.file?(buffer_file_name)
           logger.info "Reading the buffer already created in #{buffer_file_name}..."
 
@@ -109,6 +114,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
           plugin.bot = bot
           plugin.message = message
+          plugin.buffer_file_name = buffer_file_name
           plugin_name = plugin.class.name
 
           begin
@@ -120,7 +126,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
               File.write(buffer_file_name, session_buffer.to_json)
             elsif session_buffer['is_open']
-              # if the current user has a plugin waiting for a reply skip	
+              # if the current user has a plugin waiting for a reply skip
               # the interpretation of other commands
               next
             elsif !message.text.nil?
