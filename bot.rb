@@ -22,7 +22,6 @@ if token.empty?
   abort '[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
 end
 
-# worst solution ever I know but will be fixed!
 # get the pool size value. Useful when working with threads
 ENV['TELEGRAM_BOT_POOL_SIZE'] = config_file['pool_size']
 

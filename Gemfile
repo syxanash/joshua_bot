@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.5.0"
+ruby "2.6.0"
 
 gem "telegram-bot-ruby"
 
@@ -9,3 +9,4 @@ gem "rest-client"
 gem "arduino_firmata"
 gem "genius"
 gem "similar_text"
+gem 'nokogiri'

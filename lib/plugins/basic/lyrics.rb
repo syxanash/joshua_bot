@@ -53,13 +53,6 @@ class LyricsFinder
 end
 
 class Lyrics < AbsPlugin
-  def initialize
-    # find our more on how to get a Genius Access Token on: https://genius.com/api-clients
-    @finder = LyricsFinder.new('YOUR GENIUS API TOKEN GOES HERE!!!')
-
-    @track = {:artist => '', :name => ''}
-  end
-
   def command
     /^\/lyrics$/
   end
@@ -69,29 +62,27 @@ class Lyrics < AbsPlugin
   end
 
   def do_stuff(match_results)
-    bot.api.send_message(chat_id: message.chat.id, text: '🎵 what\'s the name of the song?')
-
-    MUST_REPLY
-  end
-
-  def do_answer(answer)
+    # find our more on how to get a Genius Access Token on: https://genius.com/api-clients
+    lyrics_finder = LyricsFinder.new('TcePgSNYX41dPJknzLUAggQAfSQCaBFhxE3VmnXUHJFLNAmFFwN7M-anip09Z12Q')
+    track = {:artist => '', :name => ''}
 
     kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 
-    if @track[:name].empty?
-      @track[:name] = answer
-      bot.api.send_message(chat_id: message.chat.id, text: '🎤 what\'s the name of the artst?')
-    elsif @track[:artist].empty?
-      @track[:artist] = answer
+    reply_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+      keyboard: %w[yes no],
+      one_time_keyboard: true
+    )
 
-      reply_keyboard =
-        Telegram::Bot::Types::ReplyKeyboardMarkup
-        .new(keyboard: ['yes', 'no'], one_time_keyboard: true)
+    bot.api.send_message(chat_id: message.chat.id, text: '🎵 what\'s the name of the song?')
+    track[:name] = read_buffer
+    bot.api.send_message(chat_id: message.chat.id, text: '🎤 what\'s the name of the artst?')
+    track[:artist] = read_buffer
+    bot.api.send_message(chat_id: message.chat.id, text: "should I look for the lyrics of the track `#{track[:name]} - #{track[:artist]}`?", parse_mode: 'Markdown', reply_markup: reply_keyboard)
+    confirm_reply = read_buffer
 
-      bot.api.send_message(chat_id: message.chat.id, text: "should I look for the lyrics of the track `#{@track[:name]} - #{@track[:artist]}`?", parse_mode: 'Markdown', reply_markup: reply_keyboard)
-    elsif answer == 'yes'
+    if confirm_reply == 'yes'
       begin
-        lyrics = @finder.lyrics(@track[:name], @track[:artist])
+        lyrics = lyrics_finder.lyrics(track[:name], track[:artist])
         bot.api.send_message(chat_id: message.chat.id, text: lyrics, reply_markup: kb)
       rescue LyricsNotFound
         bot.api.send_message(chat_id: message.chat.id, text: 'lyrics not found on genius.com', reply_markup: kb)
@@ -99,10 +90,8 @@ class Lyrics < AbsPlugin
         bot.api.send_message(chat_id: message.chat.id, text: 'error occurred while using genius.com API', reply_markup: kb)
       end
 
-      STOP_REPLYING
     else
-      @track = {:name => '', :artist => ''}
-      bot.api.send_message(chat_id: message.chat.id, text: 'then what\'s the name of the song? 😀', reply_markup: kb)
+      bot.api.send_message(chat_id: message.chat.id, text: 'ok retype /lyrics', reply_markup: kb)
     end
   end
 end
