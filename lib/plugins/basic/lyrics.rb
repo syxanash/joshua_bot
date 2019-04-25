@@ -63,7 +63,7 @@ class Lyrics < AbsPlugin
 
   def do_stuff(match_results)
     # find our more on how to get a Genius Access Token on: https://genius.com/api-clients
-    lyrics_finder = LyricsFinder.new('TcePgSNYX41dPJknzLUAggQAfSQCaBFhxE3VmnXUHJFLNAmFFwN7M-anip09Z12Q')
+    lyrics_finder = LyricsFinder.new('ENTER YOUR GENIUS Client Access Token HERE!!!')
     track = {:artist => '', :name => ''}
 
     kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
