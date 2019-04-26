@@ -19,6 +19,7 @@ config_file = JSON.parse(File.read('config.json'))
 token = config_file['token']
 
 if token.empty?
+  logger.error 'Missing Telegram Bot API Token from config.json checkout: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
   abort '[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
 end
 
