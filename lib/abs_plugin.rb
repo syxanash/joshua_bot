@@ -46,9 +46,17 @@ class AbsPlugin
     loop do
       buffer_file_content = File.read(buffer_file_name)
 
+      # if the content of the buffer file is empty or is not valid JSON format
+      # it means that a process is still writing on it
+      # this code should be improved with a thread safe access to the file content
+
       next if buffer_file_content.empty?
 
-      session_buffer = JSON.parse(buffer_file_content)
+      begin
+        session_buffer = JSON.parse(buffer_file_content)
+      rescue JSON::ParserError => e
+        next
+      end
 
       break unless session_buffer['is_open']
     end
