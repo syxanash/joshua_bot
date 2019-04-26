@@ -10,3 +10,4 @@ gem "arduino_firmata"
 gem "genius"
 gem "similar_text"
 gem 'nokogiri'
+gem 'fileutils'

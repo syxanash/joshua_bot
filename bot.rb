@@ -1,7 +1,7 @@
 require 'json'
 require 'logger'
 require 'securerandom'
-require 'FileUtils'
+require 'fileutils'
 
 bot_temp_directory = '/tmp/joshua_bot_tmp'
 

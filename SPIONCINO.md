@@ -76,5 +76,3 @@ This project was originally created to experiment with Arduino _Firmata_, learn 
 The Arduino version which is no longer supported lies dead in `lib/plugins/unsupported/motionsensor.rb`, [this](other/doc_assets/arduino.png) was the old schematics of the project. I even made a demonstration [video](https://www.youtube.com/watch?v=irJc_imOiuo) in my college dorm room.
 
 Feel free to send some PR for bug fixing or new features!
-
-![spioncino](other/doc_assets/spioncino.gif)
