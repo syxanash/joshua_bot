@@ -22,7 +22,7 @@ Enter a valid bot API token in `config.json` (see **Configure** below) then run 
 $ ruby bot.rb
 ```
 
-A log file will be created in `/tmp` directory with a random name (e.g. `joshua_bot_1b3510f004bd.log`)
+A log file will be created in `/tmp/joshua_bot_tmp` directory with a random name (e.g. `bot_1b3510f004bd.log`)
 
 ## Configure
 
@@ -32,7 +32,7 @@ Before running the bot you need to add a telegram API key for your bot to the fi
 
 Here's an example of a `config.json` once you have your API key set up:
 
-```
+```json
 {
   "token": "103414657:AAGh0I6l-CKf_TDu6CUNa7c7MgnfRbUDzMQ",
   "pool_size": "4",
@@ -68,7 +68,6 @@ Each plugin is a class which extends the class `AbsPlugin`. A plugin should have
 * `command`
 * `show_usage`
 * `do_stuff`
-* `do_answer` (not mandary)
 
 You can place a new plugin in the folder `lib/plugins` or inside a subfolder of this directory to group plugins in sets. For example `basic/` and `spioncino/` are two sets of plugins.
 
@@ -106,29 +105,50 @@ For instance the plugin **NoirSensor** will call the method `show_usage` if the 
 
 This method will contain the actual code executed when the command is invoked. You can send simple text messages to the user (see the plugin **Fortune**), images (see **Xkcd** plugin) or audio messages (see **spioncino/Say**).
 
+## Interacting with plugins
+
+You can interact with plugins either by passing **additional parameters** when calling the plugin or by asking the user further questions by **reading the buffer**. An analogy to this could be passing information to a command line tool either by passing _arguments_ or using `STDIN` 😄
+
+### Additional Parameters
+
 Additional command's parameters will be stored in the formal parameter `match_result` of the method `do_stuff`. The plugin's additional parameters will be created if you define a regular expression which accepts extra parameters like:
 
 `/^\/diceroll\s?([1-9]*?)?$/`
 
 In this case **DiceRoll** plugin can be invoked by using the command `/diceroll` or you can pass an extra parameter as an integer like so: `/diceroll 50` (this plugin will now generate a random number from 1-50). `match_result` is an array which will contain all the captured variables of the matched plugin's regex.
 
-### do_answer
+<img src="other/doc_assets/screenshot_additional_parameters.png" alt="screenshot_additional_parameters" width="400" height="490" />
 
-**(This solution is hacky and ugly will be fixed [HERE](https://github.com/syxanash/joshua_bot/issues/7))**
+### Read Buffer
 
-You can create plugins which will reply to user's inputs by returning the constant `MUST_REPLY` in the method `do_stuff()`. In this case the method `do_answer` will be invoked subsequently and you can place in here the code which will handle the user's answer.
+If you want your plugins to be more interactive asking questions and evaluating replies, more like a conversation with the user, you can use `read_buffer()`. This method must be invoked in the `do_stuff` block of your plugin.
 
-Take a look at the plugin **Morra**, in this case the plugin sends a message and expects a reply, an emoji containig 🗿 📄 ✂️, so we return the constant `MUST_REPLY` at the end of the method. After the user replied with a text message the `do_answer` method will manage the answer.
+Here's an example of a simple plugin which makes the addition of two numbers:
 
-The formal parameter `human_choice` contains user's answer as a string format.
+```rb
+def do_stuff(match_results)
+  bot.api.send_message(chat_id: message.chat.id, text: "what's the first number?")
+  first_number = read_buffer
 
-When `MUST_REPLY` is returned by `do_stuff` any other messages sent by the user will go into `do_answer` (including other valid commands). In order to interrupt the flow you can return the constant `STOP_REPLYING` by the method `do_answer`.
+  bot.api.send_message(chat_id: message.chat.id, text: "what's the second number?")
+  second_number = read_buffer
 
-Check out these plugins which use `do_answer`:
+  add_result = first_number.to_i + second_number.to_i
 
-* `morra.rb`
-* `lyrics.rb`
-* `randomlogo.rb`
+  bot.api.send_message(chat_id: message.chat.id, text: "Result is #{add_result}.... a genius!")
+end
+```
+
+And this is going to be the result:
+
+<img src="other/doc_assets/screenshot_sesion_buffer.png" alt="screenshot_sesion_buffer" width="400" height="490" />
+
+Some plugins which use the session buffer are:
+
+* `basic/lyrics.rb` 
+* `basic/randomlogo.rb`
+* `basic/morra.rb`
+* `spioncino/remote.rb`
 
 ## Spioncino
 

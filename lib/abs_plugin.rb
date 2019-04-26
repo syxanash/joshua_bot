@@ -1,10 +1,7 @@
 require 'telegram/bot'
 
 class AbsPlugin
-  MUST_REPLY = 'MUST_REPLY'.freeze
-  STOP_REPLYING = 'STOP_REPLYING'.freeze
-
-  attr_accessor :bot, :message
+  attr_accessor :bot, :message, :buffer_file_name
 
   # the following two methods will be used to know the plugins name which
   # inherited from the class Plugin
@@ -35,9 +32,34 @@ class AbsPlugin
     raise NotImplementedError, 'You must implement do_stuff method'
   end
 
-  def do_answer(_answer)
-    # if plugin needs answer from user, code must be placed here
+  def read_buffer()
+    # open the buffer in order to wait for input from users
+    session_buffer = {
+      plugin: self.class,
+      is_open: true,
+      content: ''
+    }
 
-    raise NotImplementedError, 'You must implement do_answer method'
+    File.write(buffer_file_name, session_buffer.to_json)
+
+    # read the buffer until it's closed
+    loop do
+      buffer_file_content = File.read(buffer_file_name)
+
+      next if buffer_file_content.empty?
+
+      session_buffer = JSON.parse(buffer_file_content)
+
+      break unless session_buffer['is_open']
+    end
+
+    # clear the buffer for future plugins
+    File.write(buffer_file_name, {
+      plugin: '',
+      is_open: false,
+      content: ''
+    }.to_json)
+
+    session_buffer['content']
   end
 end

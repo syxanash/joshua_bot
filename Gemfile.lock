@@ -20,6 +20,7 @@ GEM
     event_emitter (0.2.6)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
+    fileutils (1.2.0)
     genius (0.1.1)
       httparty (~> 0.11.0)
     http-cookie (1.0.3)
@@ -31,11 +32,14 @@ GEM
     inflecto (0.0.2)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2018.0812)
+    mime-types-data (3.2019.0331)
+    mini_portile2 (2.4.0)
     multi_json (1.13.1)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
     netrc (0.11.0)
+    nokogiri (1.10.3)
+      mini_portile2 (~> 2.4.0)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -49,7 +53,7 @@ GEM
     thread_safe (0.3.6)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.5)
+    unf_ext (0.0.7.6)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
@@ -61,13 +65,15 @@ PLATFORMS
 
 DEPENDENCIES
   arduino_firmata
+  fileutils
   genius
+  nokogiri
   rest-client
   similar_text
   telegram-bot-ruby
 
 RUBY VERSION
-   ruby 2.5.0p0
+   ruby 2.6.0p0
 
 BUNDLED WITH
-   1.16.6
+   1.17.2

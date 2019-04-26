@@ -1,14 +1,4 @@
 class Remote < AbsPlugin
-  def initialize
-    @main_reply = {:confirm => '', :action => ''}
-
-    @options = {
-      'stop bot' => Proc.new { Kernel.exit }, 
-      'restart system' => Proc.new { system('sudo reboot') },
-      'poweroff system' => Proc.new { system('sudo poweroff') }
-    }
-  end
-
   def command
     /^\/remote$/
   end
@@ -18,54 +8,40 @@ class Remote < AbsPlugin
   end
 
   def do_stuff(match_results)
+    commands_map = {
+      'stop bot' => Proc.new { Kernel.exit }, 
+      'restart system' => Proc.new { system('sudo reboot') },
+      'poweroff system' => Proc.new { system('sudo poweroff') }
+    }
 
-    reply_keyboard =
-        Telegram::Bot::Types::ReplyKeyboardMarkup
-        .new(keyboard: @options.keys, one_time_keyboard: true)
-
-    bot.api.send_message(chat_id: message.chat.id, text: 'what would you like to do?', reply_markup: reply_keyboard)
-
-    MUST_REPLY
-  end
-
-  def do_answer(answer)
+    reply_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+      keyboard: commands_map.keys,
+      one_time_keyboard: true
+    )
+    confirm_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+      keyboard: %w[yes no],
+      one_time_keyboard: true
+    )
     no_keyboard = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 
-    # check whether the input entered by the user is a confirmation
-    # reply or an action to perform
-    if answer == 'yes' || answer == 'no'
-      @main_reply[:confirm] = answer
-    else
-      @main_reply[:action] = answer
-    end
+    bot.api.send_message(chat_id: message.chat.id, text: 'what would you like to do?', reply_markup: reply_keyboard)
+    human_choice = read_buffer
 
-    # check if the confirmation reply is empty if true ask the user
-    # if he wants to confirm the action he previously selected
-    if @main_reply[:confirm].empty?
-      reply_keyboard =
-          Telegram::Bot::Types::ReplyKeyboardMarkup
-          .new(keyboard: ['yes', 'no'], one_time_keyboard: true)
+    if commands_map.keys.include? human_choice
+      bot.api.send_message(chat_id: message.chat.id, text: "you sure you want to #{human_choice}?", reply_markup: confirm_keyboard)
+      confirm_reply = read_buffer
 
-      bot.api.send_message(chat_id: message.chat.id, text: "you sure you want to #{answer}?", reply_markup: reply_keyboard)
-    end
-
-    if @main_reply[:confirm] == 'no'
-      bot.api.send_message(chat_id: message.chat.id, text: "I won't do anything!", reply_markup: no_keyboard)
-
-      STOP_REPLYING
-    elsif @main_reply[:confirm] == 'yes'
-      # check if the action selected by the user is actually contained in the
-      # list of allowed actionss and execute the code block stored in hash
-
-      if @options.keys.include? @main_reply[:action]
-        bot.api.send_message(chat_id: message.chat.id, text: "I'm going to #{@main_reply[:action]}", reply_markup: no_keyboard)
-      
-        @options[@main_reply[:action]].call
+      if confirm_reply == 'no'
+        bot.api.send_message(chat_id: message.chat.id, text: "I won't do anything!", reply_markup: no_keyboard)
+      elsif confirm_reply == 'yes'
+        bot.api.send_message(chat_id: message.chat.id, text: "I'm going to #{human_choice}", reply_markup: no_keyboard)
+        
+        commands_map[human_choice].call
       else
-        bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize the command!", reply_markup: no_keyboard)
+        bot.api.send_message(chat_id: message.chat.id, text: "Enter valid option", reply_markup: no_keyboard)
       end
-
-      STOP_REPLYING
+    else
+      bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize the command!", reply_markup: no_keyboard)
     end
   end
 end
