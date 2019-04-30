@@ -9,5 +9,5 @@ gem "rest-client"
 gem "arduino_firmata"
 gem "genius"
 gem "similar_text"
-gem 'nokogiri'
-gem 'fileutils'
+gem "nokogiri"
+gem "fileutils"

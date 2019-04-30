@@ -73,7 +73,7 @@ Telegram::Bot::Client.run(token) do |bot|
             if message.text == bot_password
               chat_id_authenticated[message.chat.id] = true
               bot.api.delete_message(chat_id: message.chat.id, message_id: message.message_id)
-              bot.api.sendMessage(chat_id: message.chat.id, text: ">Shall we play a game?")
+              bot.api.send_message(chat_id: message.chat.id, text: ">Shall we play a game?")
             else
               bot.api.send_message(chat_id: message.chat.id, text: 'LOGON:')
 

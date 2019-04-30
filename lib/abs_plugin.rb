@@ -70,6 +70,8 @@ class AbsPlugin
       content: ''
     }.to_json)
 
+    bot.api.send_chat_action(chat_id: message.chat.id, action: 'typing')
+
     raise CancelOptionException if session_buffer['content'] == stop_command
 
     session_buffer['content']
