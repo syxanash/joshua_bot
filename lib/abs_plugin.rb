@@ -1,7 +1,9 @@
 require 'telegram/bot'
 
+class CancelOptionException < StandardError; end
+
 class AbsPlugin
-  attr_accessor :bot, :message, :buffer_file_name
+  attr_accessor :bot, :message, :buffer_file_name, :stop_command
 
   # the following two methods will be used to know the plugins name which
   # inherited from the class Plugin
@@ -54,7 +56,7 @@ class AbsPlugin
 
       begin
         session_buffer = JSON.parse(buffer_file_content)
-      rescue JSON::ParserError => e
+      rescue JSON::ParserError
         next
       end
 
@@ -67,6 +69,10 @@ class AbsPlugin
       is_open: false,
       content: ''
     }.to_json)
+
+    bot.api.send_chat_action(chat_id: message.chat.id, action: 'typing')
+
+    raise CancelOptionException if session_buffer['content'] == stop_command
 
     session_buffer['content']
   end

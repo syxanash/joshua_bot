@@ -132,16 +132,16 @@ def do_stuff(match_results)
 
   bot.api.send_message(chat_id: message.chat.id, text: "what's the second number?")
   second_number = read_buffer
-
-  add_result = first_number.to_i + second_number.to_i
-
-  bot.api.send_message(chat_id: message.chat.id, text: "Result is #{add_result}.... a genius!")
+    
+  bot.api.send_message(chat_id: message.chat.id, text: "I'm not a calculator so F𝔘Ⓒk off")
+  sleep(3)
+  bot.api.send_message(chat_id: message.chat.id, text: "it's #{first_number.to_i + second_number.to_i}...")
 end
 ```
 
 And this is going to be the result:
 
-<img src="other/doc_assets/screenshot_sesion_buffer.png" alt="screenshot_sesion_buffer" width="400" height="490" />
+<img src="other/doc_assets/screenshot_session_buffer.png" alt="screenshot_session_buffer" width="400" height="490" />
 
 Some plugins which use the session buffer are:
 

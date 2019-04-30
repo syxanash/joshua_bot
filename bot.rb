@@ -72,9 +72,10 @@ Telegram::Bot::Client.run(token) do |bot|
           unless chat_id_authenticated[message.chat.id]
             if message.text == bot_password
               chat_id_authenticated[message.chat.id] = true
-              bot.api.sendMessage(chat_id: message.chat.id, text: ">#{"\n" * 50}Shall we play a game?")
+              bot.api.delete_message(chat_id: message.chat.id, message_id: message.message_id)
+              bot.api.send_message(chat_id: message.chat.id, text: ">Shall we play a game?")
             else
-              bot.api.sendMessage(chat_id: message.chat.id, text: 'LOGON:')
+              bot.api.send_message(chat_id: message.chat.id, text: 'LOGON:')
 
               # jump to the next incoming message to safely skip the
               # interpreations of the message just given
@@ -109,12 +110,11 @@ Telegram::Bot::Client.run(token) do |bot|
           # for each message create an instance of the plugin library
           plugin = lib.new
 
-          # set bot and message object for each plugin
-          # and save the name of the plugin
-
           plugin.bot = bot
           plugin.message = message
           plugin.buffer_file_name = buffer_file_name
+          plugin.stop_command = '/cancel'
+
           plugin_name = plugin.class.name
 
           begin
@@ -147,10 +147,18 @@ Telegram::Bot::Client.run(token) do |bot|
               end
             end
           rescue NotImplementedError
-            bot.api.sendMessage(chat_id: message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
+            logger.error "Some methods haven't been implemented for plugin #{plugin_name}"
+            bot.api.send_message(chat_id: message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
+          rescue CancelOptionException
+            logger.info "Manually stopped executing #{plugin_name}"
+            bot.api.send_message(
+              chat_id: message.chat.id,
+              text: "⚠️ Stopped executing #{plugin_name} plugin",
+              reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+            )
           rescue => e
             logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
-            bot.api.sendMessage(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
+            bot.api.send_message(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
           end
         end
 
@@ -158,28 +166,25 @@ Telegram::Bot::Client.run(token) do |bot|
         # statement for interpreations. This is used for simple basic commands
         case message.text
         when '/start', "/start@#{bot_username}"
-          bot.api.sendMessage(chat_id: message.chat.id, text: 'Greetings, Professor Falken.')
+          bot.api.send_message(chat_id: message.chat.id, text: 'Greetings, Professor Falken.')
         when /josh/i
-          bot.api.sendMessage(chat_id: message.chat.id, text: 'did somebody just say Joshua?')
+          bot.api.send_message(chat_id: message.chat.id, text: 'did somebody just say Joshua?')
         when '/users', "/users@#{bot_username}"
           if password_enabled
-            bot.api.sendMessage(chat_id: message.chat.id, text: "Current active chats: #{chat_id_authenticated.size}")
+            bot.api.send_message(chat_id: message.chat.id, text: "Current active chats: #{chat_id_authenticated.size}")
           end
         when '/ping', "/ping@#{bot_username}"
           bot.api.send_message(chat_id: message.chat.id, text: 'pong')
         when '/about', "/about@#{bot_username}"
           text_value = <<-FOO
-I was created by my lovely maker syx
+I was created by my lovely maker ^syx.*$
 
 ⚠️ Three Laws of Robotics ⚠️
 ⚫️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
 ⚫️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
 ⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
 FOO
-          bot.api.sendMessage(chat_id: message.chat.id, text: text_value)
-        when '/stop', "/stop@#{bot_username}"
-          kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-          bot.api.sendMessage(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
+          bot.api.send_message(chat_id: message.chat.id, text: text_value)
         end
       end
     end

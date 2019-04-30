@@ -7,7 +7,7 @@ class Morra < AbsPlugin
     bot.api.sendMessage(chat_id: message.chat.id, text: 'play some rock paper scissors with /morra command!')
   end
 
-  def do_stuff(match_results)
+  def do_stuff(_match_results)
     game_values = %w[🗿 📄 ✂️]
     bot_choice = game_values[Random.rand(game_values.size)]
     winner_message = 'no winners 😞'
