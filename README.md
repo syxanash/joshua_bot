@@ -135,7 +135,7 @@ def do_stuff(match_results)
     
   bot.api.send_message(chat_id: message.chat.id, text: "I'm not a calculator so F𝔘Ⓒk off")
   sleep(3)
-  bot.api.send_message(chat_id: message.chat.id, text: "it's #{first_number.to_i + second_number.to_i} anyway...")
+  bot.api.send_message(chat_id: message.chat.id, text: "it's #{first_number.to_i + second_number.to_i}...")
 end
 ```
 
