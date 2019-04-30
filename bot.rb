@@ -9,7 +9,7 @@ bot_temp_directory = '/tmp/joshua_bot_tmp'
 FileUtils.rm_rf bot_temp_directory if File.directory?(bot_temp_directory)
 FileUtils.mkdir_p bot_temp_directory
 
-logger = Logger.new(STDOUT)
+logger = Logger.new("#{bot_temp_directory}/bot_#{SecureRandom.hex(6)}.log")
 
 logger.info 'Reading bot configuration file...'
 
@@ -113,7 +113,7 @@ Telegram::Bot::Client.run(token) do |bot|
           plugin.bot = bot
           plugin.message = message
           plugin.buffer_file_name = buffer_file_name
-          plugin.stop_command = '/stop'
+          plugin.stop_command = '/cancel'
 
           plugin_name = plugin.class.name
 
@@ -147,9 +147,15 @@ Telegram::Bot::Client.run(token) do |bot|
               end
             end
           rescue NotImplementedError
+            logger.error "Some methods haven't been implemented for plugin #{plugin_name}"
             bot.api.send_message(chat_id: message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
           rescue CancelOptionException
-            bot.api.send_message(chat_id: message.chat.id, text: "⚠️ Stopped executing #{plugin_name} plugin")
+            logger.info "Manually stopped executing #{plugin_name}"
+            bot.api.send_message(
+              chat_id: message.chat.id,
+              text: "⚠️ Stopped executing #{plugin_name} plugin",
+              reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+            )
           rescue => e
             logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
             bot.api.send_message(chat_id: message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
@@ -171,7 +177,7 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: message.chat.id, text: 'pong')
         when '/about', "/about@#{bot_username}"
           text_value = <<-FOO
-I was created by my lovely maker syx
+I was created by my lovely maker ^syx.*$
 
 ⚠️ Three Laws of Robotics ⚠️
 ⚫️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
@@ -179,9 +185,6 @@ I was created by my lovely maker syx
 ⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
 FOO
           bot.api.send_message(chat_id: message.chat.id, text: text_value)
-        when '/stop', "/stop@#{bot_username}"
-          kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-          bot.api.send_message(chat_id: message.chat.id, text: 'A strange game. The only winning move is not to play. How about a nice game of chess?', reply_markup: kb)
         end
       end
     end
