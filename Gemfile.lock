@@ -70,7 +70,7 @@ DEPENDENCIES
   nokogiri
   rest-client
   similar_text
-  telegram-bot-ruby
+  telegram-bot-ruby (>= 0.8.6.1)
 
 RUBY VERSION
    ruby 2.5.0p0
