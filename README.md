@@ -150,6 +150,10 @@ Some plugins which use the session buffer are:
 * `basic/morra.rb`
 * `spioncino/remote.rb`
 
+### Stopping a plugin
+
+In order to stop a bot from asking further inputs and replies from a user, perhaps because of a bug or an unforeseen loop condition in your code, you can type the command `/cancel` and the plugin will terminate its execution.
+
 ## Spioncino
 
 ![ruby lady](other/doc_assets/ruby-lady.png)
