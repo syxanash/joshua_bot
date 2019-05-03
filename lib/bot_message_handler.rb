@@ -21,7 +21,10 @@ class BotMessageHandler
         unless chat_id_authenticated[user_message.chat.id]
           if user_message.text == bot_password
             chat_id_authenticated[user_message.chat.id] = true
-            bot.api.send_message(chat_id: user_message.chat.id, text: ">#{"\n" * 40}Shall we play a game?")
+            bot.api.send_message(
+              chat_id: user_message.chat.id,
+              text: ">#{"\n" * 40}Shall we play a game?"
+            )
           else
             bot.api.send_message(chat_id: user_message.chat.id, text: 'LOGON:')
 
@@ -41,14 +44,14 @@ class BotMessageHandler
 
       # initialize the buffer file for the current chat id
       if File.file?(buffer_file_name)
-          @logger.info "Reading the buffer already created in #{buffer_file_name}..."
+        @logger.info "Reading the buffer already created in #{buffer_file_name}..."
 
-          buffer_file_content = File.read(buffer_file_name)
-          session_buffer = JSON.parse(buffer_file_content)
+        buffer_file_content = File.read(buffer_file_name)
+        session_buffer = JSON.parse(buffer_file_content)
       else
-          File.write(buffer_file_name, session_buffer.to_json)
+        File.write(buffer_file_name, session_buffer.to_json)
 
-          @logger.info "Created a new buffer file #{user_message.chat.id}"
+        @logger.info "Created a new buffer file #{user_message.chat.id}"
       end
 
       bot_username = bot.api.getMe['result']['username']
@@ -64,42 +67,48 @@ class BotMessageHandler
         plugin.stop_command = '/cancel'
 
         plugin_name = plugin.class.name
-        
+
         begin
-        if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
-          @logger.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
+          if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
+            @logger.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
 
-          session_buffer['content'] = user_message.text
-          session_buffer['is_open'] = false
+            session_buffer['content'] = user_message.text
+            session_buffer['is_open'] = false
 
-          bot.api.send_chat_action(chat_id: user_message.chat.id, action: 'typing')
+            bot.api.send_chat_action(
+              chat_id: user_message.chat.id,
+              action: 'typing'
+            )
 
-          File.write(buffer_file_name, session_buffer.to_json)
-        elsif session_buffer['is_open']
-          
-          # if the current user has a plugin waiting for a reply skip
-          # the interpretation of other commands
-          next
-        elsif !user_message.text.nil?
-          # beautify message sent with @ format (used in groups)
-          if user_message.text.include? "@#{bot_username}"
-            user_message.text.slice! "@#{bot_username}"
+            File.write(buffer_file_name, session_buffer.to_json)
+          elsif session_buffer['is_open']
+
+            # if the current user has a plugin waiting for a reply skip
+            # the interpretation of other commands
+            next
+          elsif !user_message.text.nil?
+            # beautify message sent with @ format (used in groups)
+            if user_message.text.include? "@#{bot_username}"
+              user_message.text.slice! "@#{bot_username}"
+            end
+
+            if plugin.command.match(user_message.text)
+              # send the match result to do_stuff method if it needs to
+              # do something with a particular command requiring arguments
+              plugin.do_stuff(Regexp.last_match)
+
+              # if the plugin main regexp does't match the message
+              # then show the plugin usage example
+            elsif %r{\/#{plugin_name.downcase}?} =~ user_message.text
+              plugin.show_usage
+            end
           end
-
-          if plugin.command.match(user_message.text)
-            # send the match result to do_stuff method if it needs to
-            # do something with a particular command requiring arguments
-            plugin.do_stuff(Regexp.last_match)
-
-            # if the plugin main regexp does't match the message
-            # then show the plugin usage example
-          elsif %r{\/#{plugin_name.downcase}?} =~ user_message.text
-            plugin.show_usage
-          end
-        end
         rescue NotImplementedError
           @logger.error "Some methods haven't been implemented for plugin #{plugin_name}"
-          bot.api.send_message(chat_id: user_message.chat.id, text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️")
+          bot.api.send_message(
+            chat_id: user_message.chat.id,
+            text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️"
+          )
         rescue CancelOptionException
           @logger.info "Manually stopped executing #{plugin_name}"
           bot.api.send_message(
@@ -108,9 +117,11 @@ class BotMessageHandler
               reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           )
         rescue => e
-          puts e.backtrace.inspect  
-          @logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message}"
-          bot.api.send_message(chat_id: user_message.chat.id, text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫")
+          @logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message} #{e.backtrace.inspect}"
+          bot.api.send_message(
+            chat_id: user_message.chat.id,
+            text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫"
+          )
         end
       end
 
@@ -128,14 +139,14 @@ class BotMessageHandler
       when '/ping', "/ping@#{bot_username}"
         bot.api.send_message(chat_id: user_message.chat.id, text: 'pong')
       when '/about', "/about@#{bot_username}"
-        text_value = <<-FOO
-  I was created by my lovely maker ^syx.*$
+        text_value = <<~ABOUT
+          I was created by my lovely maker ^syx.*$
 
-  ⚠️ Three Laws of Robotics ⚠️
-  ⚫️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
-  ⚫️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
-  ⚫️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
-  FOO
+          ⚠️ Three Laws of Robotics
+          🤖️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+          🤖️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
+          🤖️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+        ABOUT
         bot.api.send_message(chat_id: user_message.chat.id, text: text_value)
       end
     end
