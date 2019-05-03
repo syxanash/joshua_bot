@@ -21,14 +21,11 @@ class BotMessageHandler
         unless chat_id_authenticated[user_message.chat.id]
           if user_message.text == bot_password
             chat_id_authenticated[user_message.chat.id] = true
-<<<<<<< HEAD
+
             bot.api.send_message(
               chat_id: user_message.chat.id,
               text: ">#{"\n" * 40}Shall we play a game?"
             )
-=======
-            bot.api.send_message(chat_id: user_message.chat.id, text: ">#{"\n" * 40}Shall we play a game?")
->>>>>>> separated code into a message handler from the main bot script
           else
             bot.api.send_message(chat_id: user_message.chat.id, text: 'LOGON:')
 
