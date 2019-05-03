@@ -123,6 +123,8 @@ Telegram::Bot::Client.run(token) do |bot|
               session_buffer['content'] = message.text
               session_buffer['is_open'] = false
 
+              bot.api.send_chat_action(chat_id: message.chat.id, action: 'typing')
+
               File.write(buffer_file_name, session_buffer.to_json)
             elsif session_buffer['is_open']
               # if the current user has a plugin waiting for a reply skip
