@@ -1,6 +1,7 @@
 {
   "token": "",
   "pool_size": "4",
+  "temp_directory": "/tmp/joshua_bot_tmp",
   "plugin_folder": "basic",
   "password": ""
 }
