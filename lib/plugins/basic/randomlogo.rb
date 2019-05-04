@@ -49,7 +49,7 @@ class RandomLogo < AbsPlugin
     answers = [] # array will contain all answers for custom keyboard
 
     puts '[!] fetching logo with wget'
-    system("wget https://s3-us-west-2.amazonaws.com/svgporn.com/logos/#{correct_answer_file}")
+    system("wget https://cdn.svgporn.com/logos/#{correct_answer_file}")
     puts '[!] converting logo from svg to png with imagemagick convert'
     system("convert #{correct_answer_file} #{correct_answer_file}.png")
 
