@@ -82,6 +82,10 @@ class BotMessageHandler
             )
 
             File.write(buffer_file_name, session_buffer.to_json)
+            
+            # if we replied to the plugin waiting for answer by the user
+            # stop checking further plugins
+            return
           elsif session_buffer['is_open']
 
             # if the current user has a plugin waiting for a reply skip
