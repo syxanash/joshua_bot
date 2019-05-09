@@ -1,7 +1,12 @@
+require 'telegram/bot'
 require 'json'
 require 'fileutils'
+
 require './lib/logging'
 require './lib/bot_config'
+require './lib/plugin_handler'
+require './lib/bot_message_handler'
+require './lib/abs_plugin'
 
 include Logging
 include BotConfig
@@ -16,14 +21,6 @@ if token.empty?
   Logging.log.error 'Missing Telegram Bot API Token from config.json checkout: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
   abort '[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
 end
-
-# get the pool size value. Useful when working with threads
-ENV['TELEGRAM_BOT_POOL_SIZE'] = BotConfig.config['pool_size']
-
-# finally loading telegram bot wrapper class and plugins
-require 'telegram/bot'
-require './lib/abs_plugin'
-require './lib/bot_message_handler'
 
 plugins_list = Dir[File.dirname(__FILE__) + "/lib/plugins/*.rb"]
 

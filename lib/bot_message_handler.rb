@@ -31,99 +31,10 @@ class BotMessageHandler
         end
       end
 
-      session_buffer = {
-          plugin: '',
-          is_open: false,
-          content: ''
-      }
-      buffer_file_name = "#{BotConfig.config['temp_directory']}/joshua_#{user_message.chat.id}_buffer.json"
-
-      # initialize the buffer file for the current chat id
-      if File.file?(buffer_file_name)
-        Logging.log.info "Reading the buffer already created in #{buffer_file_name}..."
-
-        buffer_file_content = File.read(buffer_file_name)
-        session_buffer = JSON.parse(buffer_file_content)
-      else
-        File.write(buffer_file_name, session_buffer.to_json)
-
-        Logging.log.info "Created a new buffer file #{user_message.chat.id}"
-      end
+      # check if the command sent by user is a plugin invocation
+      PluginHandler.handle(bot, user_message)
 
       bot_username = bot.api.getMe['result']['username']
-      Logging.log.info "Now received: #{user_message.text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
-
-      AbsPlugin.descendants.each do |lib|
-        # for each message create an instance of the plugin library
-        plugin = lib.new
-
-        plugin.bot = bot
-        plugin.message = user_message
-        plugin.buffer_file_name = buffer_file_name
-        plugin.stop_command = '/cancel'
-
-        plugin_name = plugin.class.name
-
-        begin
-          if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
-            Logging.log.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
-
-            session_buffer['content'] = user_message.text
-            session_buffer['is_open'] = false
-
-            bot.api.send_chat_action(
-              chat_id: user_message.chat.id,
-              action: 'typing'
-            )
-
-            File.write(buffer_file_name, session_buffer.to_json)
-
-            # if we replied to the plugin waiting for answer by the user
-            # stop checking further plugins
-            break
-          elsif session_buffer['is_open']
-
-            # if the current user has a plugin waiting for a reply skip
-            # the interpretation of other commands
-            next
-          elsif !user_message.text.nil?
-            # beautify message sent with @ format (used in groups)
-            if user_message.text.include? "@#{bot_username}"
-              user_message.text.slice! "@#{bot_username}"
-            end
-
-            if plugin.command.match(user_message.text)
-              # send the match result to do_stuff method if it needs to
-              # do something with a particular command requiring arguments
-              plugin.do_stuff(Regexp.last_match)
-
-              # if the plugin main regexp does't match the message
-              # then show the plugin usage example
-            elsif %r{\/#{plugin_name.downcase}?} =~ user_message.text
-              plugin.show_usage
-            end
-          end
-        rescue NotImplementedError
-          Logging.log.error "Some methods haven't been implemented for plugin #{plugin_name}"
-          bot.api.send_message(
-            chat_id: user_message.chat.id,
-            text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️"
-          )
-        rescue CancelOptionException
-          Logging.log.info "Manually stopped executing #{plugin_name}"
-          bot.api.send_message(
-              chat_id: user_message.chat.id,
-              text: "⚠️ Stopped executing #{plugin_name} plugin",
-              reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-          )
-        rescue => e
-          Logging.log.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message} #{e.backtrace.inspect}"
-          bot.api.send_message(
-            chat_id: user_message.chat.id,
-            text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫"
-          )
-        end
-      end
 
       # if the message is not a command for any plugin then check with case
       # statement for interpreations. This is used for simple basic commands
