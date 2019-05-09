@@ -8,9 +8,6 @@ require './lib/plugin_handler'
 require './lib/bot_message_handler'
 require './lib/abs_plugin'
 
-include Logging
-include BotConfig
-
 # create a folder in tmp directory for this bot
 FileUtils.rm_rf BotConfig.config['temp_directory'] if File.directory?(BotConfig.config['temp_directory'])
 FileUtils.mkdir_p BotConfig.config['temp_directory']
