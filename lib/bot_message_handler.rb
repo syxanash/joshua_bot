@@ -1,22 +1,17 @@
 class BotMessageHandler
-  def initialize(config_file, logger)
-    @config_file = config_file
-    @logger = logger
-  end
-
   def handle(bot, user_message)
     # check if bot needs password to execute commands
-    bot_password = @config_file['password']
+    bot_password = BotConfig.config['password']
     password_enabled = !bot_password.empty?
     chat_id_authenticated = {}
 
     if user_message.date < Time.now.to_i - 10
-      @logger.info "#{user_message.text} received while you were away from #{user_message.from.first_name}, in #{user_message.chat.id}"
+      Logging.log.info "#{user_message.text} received while you were away from #{user_message.from.first_name}, in #{user_message.chat.id}"
     else
       # if a password is defined in configuration file, check if user
       # enters the password before giving further commands
       if password_enabled
-        @logger.info "Chat id authorized: #{chat_id_authenticated}"
+        Logging.log.info "Chat id authorized: #{chat_id_authenticated}"
 
         unless chat_id_authenticated[user_message.chat.id]
           if user_message.text == bot_password
@@ -41,22 +36,22 @@ class BotMessageHandler
           is_open: false,
           content: ''
       }
-      buffer_file_name = "#{@config_file['temp_directory']}/joshua_#{user_message.chat.id}_buffer.json"
+      buffer_file_name = "#{BotConfig.config['temp_directory']}/joshua_#{user_message.chat.id}_buffer.json"
 
       # initialize the buffer file for the current chat id
       if File.file?(buffer_file_name)
-        @logger.info "Reading the buffer already created in #{buffer_file_name}..."
+        Logging.log.info "Reading the buffer already created in #{buffer_file_name}..."
 
         buffer_file_content = File.read(buffer_file_name)
         session_buffer = JSON.parse(buffer_file_content)
       else
         File.write(buffer_file_name, session_buffer.to_json)
 
-        @logger.info "Created a new buffer file #{user_message.chat.id}"
+        Logging.log.info "Created a new buffer file #{user_message.chat.id}"
       end
 
       bot_username = bot.api.getMe['result']['username']
-      @logger.info "Now received: #{user_message.text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
+      Logging.log.info "Now received: #{user_message.text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
 
       AbsPlugin.descendants.each do |lib|
         # for each message create an instance of the plugin library
@@ -71,7 +66,7 @@ class BotMessageHandler
 
         begin
           if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
-            @logger.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
+            Logging.log.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
 
             session_buffer['content'] = user_message.text
             session_buffer['is_open'] = false
@@ -109,20 +104,20 @@ class BotMessageHandler
             end
           end
         rescue NotImplementedError
-          @logger.error "Some methods haven't been implemented for plugin #{plugin_name}"
+          Logging.log.error "Some methods haven't been implemented for plugin #{plugin_name}"
           bot.api.send_message(
             chat_id: user_message.chat.id,
             text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️"
           )
         rescue CancelOptionException
-          @logger.info "Manually stopped executing #{plugin_name}"
+          Logging.log.info "Manually stopped executing #{plugin_name}"
           bot.api.send_message(
               chat_id: user_message.chat.id,
               text: "⚠️ Stopped executing #{plugin_name} plugin",
               reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
           )
         rescue => e
-          @logger.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message} #{e.backtrace.inspect}"
+          Logging.log.error "Cannot execute plugin #{plugin_name}, check if there are tools missing or wild error: #{e.message} #{e.backtrace.inspect}"
           bot.api.send_message(
             chat_id: user_message.chat.id,
             text: "🚫 #{plugin_name} plugin is not working properly on my brain operating system! 🚫"
