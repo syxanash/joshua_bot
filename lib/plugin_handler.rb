@@ -52,7 +52,6 @@ class PluginHandler
           # stop checking further plugins
           break
         elsif session_buffer['is_open']
-
           # if the current user has a plugin waiting for a reply skip
           # the interpretation of other commands
           next

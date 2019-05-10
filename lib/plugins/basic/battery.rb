@@ -2,7 +2,7 @@
 
 class Battery < AbsPlugin
   def command
-    '/battery'
+    /^\/battery$/
   end
 
   def do_stuff(match_results)

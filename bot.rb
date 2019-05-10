@@ -5,7 +5,7 @@ require 'fileutils'
 require './lib/logging'
 require './lib/bot_config'
 require './lib/plugin_handler'
-require './lib/bot_message_handler'
+require './lib/message_handler'
 require './lib/abs_plugin'
 
 # create a folder in tmp directory for this bot
@@ -37,7 +37,7 @@ plugins_list.each_with_index do |file, i|
   eval File.read(file).to_s
 end
 
-message_handler = BotMessageHandler.new()
+message_handler = MessageHandler.new
 
 Telegram::Bot::Client.run(token) do |bot|
   Logging.log.info 'Bot started'
