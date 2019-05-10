@@ -43,6 +43,8 @@ class MessageHandler
     check_simple_commands
   end
 
+  private
+
   def check_simple_commands
     bot_username = @bot.api.getMe['result']['username']
 
