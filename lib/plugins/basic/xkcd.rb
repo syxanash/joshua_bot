@@ -1,5 +1,4 @@
 require 'rest-client'
-require 'json'
 
 class Xkcd < AbsPlugin
   def command

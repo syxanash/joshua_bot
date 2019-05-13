@@ -1,5 +1,4 @@
 # to use this plugin you need to install wget and imagemagick tool convert
-require 'json'
 require 'securerandom'
 require 'rest-client'
 

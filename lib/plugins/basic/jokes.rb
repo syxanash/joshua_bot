@@ -1,5 +1,4 @@
 require 'rest-client'
-require 'json'
 require 'cgi'
 
 class Jokes < AbsPlugin

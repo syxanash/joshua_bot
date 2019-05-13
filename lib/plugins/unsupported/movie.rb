@@ -1,6 +1,5 @@
 require 'rest-client'
 require 'open-uri'
-require 'json'
 
 class Movie < AbsPlugin
   def command

@@ -1,5 +1,4 @@
 require 'rest-client'
-require 'json'
 
 class Extip < AbsPlugin
   def command
