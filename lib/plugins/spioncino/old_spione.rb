@@ -11,7 +11,7 @@ class OldSpione < AbsPlugin
 
   def show_usage
     system("wget http://i.imgur.com/WFumRlB.png -O scheme.png")
-    bot.api.sendMessage(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /oldspione *switch value*\nswitch values: on/off/idle/status or status to get the current status")
+    bot.api.send_message(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /oldspione *switch value*\nswitch values: on/off/idle/status or status to get the current status")
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new('scheme.png', 'image/png'))
     File.delete('scheme.png')
   end
@@ -33,7 +33,7 @@ class OldSpione < AbsPlugin
 
     # check if commands entered is valid
     unless status.value?(switch_value)
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Can't recognize command #{switch_value} for Motion Sensor plugin!")
+      bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize command #{switch_value} for Motion Sensor plugin!")
       return 0 # quit current plugin session
     end
 
@@ -45,7 +45,7 @@ class OldSpione < AbsPlugin
         current_status = File.read(MOTIONSENSOR_STATE_FILE)
       end
 
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Motion Sensor plugin currently #{current_status}!")
+      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor plugin currently #{current_status}!")
       return 0
     end
 
@@ -54,7 +54,7 @@ class OldSpione < AbsPlugin
     # otherwise we write a log file for the first time
     if File.exist? MOTIONSENSOR_STATE_FILE
       File.write(MOTIONSENSOR_STATE_FILE, switch_value)
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Motion Sensor mode changed to #{switch_value}")
+      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor mode changed to #{switch_value}")
 
       return 0 # quit the current plugin call
     else
@@ -77,7 +77,7 @@ class OldSpione < AbsPlugin
 
     counter = 0
 
-    bot.api.sendMessage(chat_id: message.chat.id, text: '🍓 Pi Motion Sensor up and running!')
+    bot.api.send_message(chat_id: message.chat.id, text: '🍓 Pi Motion Sensor up and running!')
 
     while plugin_process != status[:off]
       pir_state = File.read(SENSOR_OUTPUT_FILE)
@@ -133,7 +133,7 @@ class OldSpione < AbsPlugin
     File.delete(SENSOR_OUTPUT_FILE)
 
     puts '[?] Motion Sensor plugin daemon deleted!'
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
+    bot.api.send_message(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
   end
 
   def take_photo(num = 3)

@@ -6,7 +6,7 @@ class Google < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "if you want to use this command type:\n/google *something* for *someone*")
+    bot.api.send_message(chat_id: message.chat.id, text: "if you want to use this command type:\n/google *something* for *someone*")
   end
 
   def do_stuff(match_results)
@@ -14,6 +14,6 @@ class Google < AbsPlugin
     stuff = URI::encode(match_results[1])
     user = match_results[2]
 
-    bot.api.sendMessage(chat_id: message.chat.id, text: "#{user}: http://lmgtfy.com/?q=#{stuff}")
+    bot.api.send_message(chat_id: message.chat.id, text: "#{user}: http://lmgtfy.com/?q=#{stuff}")
   end
 end

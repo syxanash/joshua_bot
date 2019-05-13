@@ -4,7 +4,7 @@ class TakePhoto < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "type /takephoto")
+    bot.api.send_message(chat_id: message.chat.id, text: "type /takephoto")
   end
 
   def do_stuff(match_results)
@@ -14,7 +14,7 @@ class TakePhoto < AbsPlugin
 
       File.delete 'temp_photo.jpg'
     rescue
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Something went wrong while taking the picture!")
+      bot.api.send_message(chat_id: message.chat.id, text: "Something went wrong while taking the picture!")
     end
   end
 end

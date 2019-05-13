@@ -4,7 +4,7 @@ class Say < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "you can let me talk by typing:\n/say *dirty sentence you want me to read*")
+    bot.api.send_message(chat_id: message.chat.id, text: "you can let me talk by typing:\n/say *dirty sentence you want me to read*")
   end
 
   def do_stuff(match_results)
@@ -22,7 +22,7 @@ class Say < AbsPlugin
 
       File.delete("#{temp_name}first_audio.wav", "#{temp_name}_audio.ogg")
     else
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Sorry, my brain can't compute more than 140 characters 😅")
+      bot.api.send_message(chat_id: message.chat.id, text: "Sorry, my brain can't compute more than 140 characters 😅")
     end
   end
 end

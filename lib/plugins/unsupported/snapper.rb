@@ -4,7 +4,7 @@ class Snapper < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "type /snapper")
+    bot.api.send_message(chat_id: message.chat.id, text: "type /snapper")
   end
 
   def do_stuff(match_results)

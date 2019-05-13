@@ -4,7 +4,7 @@ class Help < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'type /help to see commands list')
+    bot.api.send_message(chat_id: message.chat.id, text: 'type /help to see commands list')
   end
 
   def do_stuff(match_results)
@@ -18,6 +18,6 @@ class Help < AbsPlugin
 
     text_to_show += "\nc'mon I'm all ears! 🔊👂"
 
-    bot.api.sendMessage(chat_id: message.chat.id, text: text_to_show)
+    bot.api.send_message(chat_id: message.chat.id, text: text_to_show)
   end
 end

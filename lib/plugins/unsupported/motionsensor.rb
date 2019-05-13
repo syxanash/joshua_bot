@@ -10,7 +10,7 @@ class MotionSensor < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "type /motionsensor *switch value*\nswitch values: on/off/idle or status to get the current status")
+    bot.api.send_message(chat_id: message.chat.id, text: "type /motionsensor *switch value*\nswitch values: on/off/idle or status to get the current status")
   end
 
   def do_stuff(match_results)
@@ -30,7 +30,7 @@ class MotionSensor < AbsPlugin
 
     # check if commands entered is valid
     unless status.value?(switch_value)
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Can't recognize command #{switch_value} for Motion Sensor plugin!")
+      bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize command #{switch_value} for Motion Sensor plugin!")
       return 0 # quit current plugin session
     end
 
@@ -42,7 +42,7 @@ class MotionSensor < AbsPlugin
         current_status = File.read(MOTIONSENSOR_STATE_FILE)
       end
 
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Motion Sensor plugin currently #{current_status}!")
+      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor plugin currently #{current_status}!")
       return 0
     end
 
@@ -51,7 +51,7 @@ class MotionSensor < AbsPlugin
     # otherwise we write a log file for the first time
     if File.exist? MOTIONSENSOR_STATE_FILE
       File.write(MOTIONSENSOR_STATE_FILE, switch_value)
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Motion Sensor mode changed to #{switch_value}")
+      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor mode changed to #{switch_value}")
 
       return 0 # quit the current plugin call
     else
@@ -81,7 +81,7 @@ PIR sensor on port: #{pir}
 FOO
 
     puts boot_screen_text
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'Arduino Motion Sensor up and running!')
+    bot.api.send_message(chat_id: message.chat.id, text: 'Arduino Motion Sensor up and running!')
 
     while plugin_process != status[:off]
       pir_state = arduino.digital_read pir
@@ -134,7 +134,7 @@ FOO
     File.delete(MOTIONSENSOR_STATE_FILE)
 
     puts '[?] Motion Sensor plugin daemon deleted!'
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
+    bot.api.send_message(chat_id: message.chat.id, text: 'Motion Sensor plugin turned off!')
   end
 
   def take_video(seconds = 20)

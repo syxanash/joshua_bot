@@ -7,7 +7,7 @@ class Movie < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "if you want get info about a movie type:\n/movie *Game of Thrones*")
+    bot.api.send_message(chat_id: message.chat.id, text: "if you want get info about a movie type:\n/movie *Game of Thrones*")
   end
 
   def do_stuff(match_results)
@@ -17,9 +17,9 @@ class Movie < AbsPlugin
     decoded = JSON.parse(json_resp)
 
     if decoded["Response"] =~ /True/i
-      bot.api.sendMessage(chat_id: message.chat.id, text: " I found on OMDB:\nTitle: #{decoded["Title"]} \nYear: #{decoded["Year"]} \nGenre: #{decoded["Genre"]}")
+      bot.api.send_message(chat_id: message.chat.id, text: " I found on OMDB:\nTitle: #{decoded["Title"]} \nYear: #{decoded["Year"]} \nGenre: #{decoded["Genre"]}")
     else
-      bot.api.sendMessage(chat_id: message.chat.id, text: "Your movie name doesn't exist on my database 😞")
+      bot.api.send_message(chat_id: message.chat.id, text: "Your movie name doesn't exist on my database 😞")
     end
   end
 end

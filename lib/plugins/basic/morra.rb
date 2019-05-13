@@ -4,7 +4,7 @@ class Morra < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'play some rock paper scissors with /morra command!')
+    bot.api.send_message(chat_id: message.chat.id, text: 'play some rock paper scissors with /morra command!')
   end
 
   def do_stuff(_match_results)

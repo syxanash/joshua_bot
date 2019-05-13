@@ -6,7 +6,7 @@ class Xkcd < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "get xkcd comics with\n/xkcd to get the last comic\n/xkcd *comic number*")
+    bot.api.send_message(chat_id: message.chat.id, text: "get xkcd comics with\n/xkcd to get the last comic\n/xkcd *comic number*")
   end
 
   def do_stuff(match_results)
@@ -32,7 +32,7 @@ class Xkcd < AbsPlugin
 
       File.delete('xkcd.png')
     rescue
-      bot.api.sendMessage(chat_id: message.chat.id, text: "xkcd comic number you entered does not exist!")
+      bot.api.send_message(chat_id: message.chat.id, text: "xkcd comic number you entered does not exist!")
     end
   end
 end

@@ -4,7 +4,7 @@ class Getpage < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "if you want get image of a webpage type:\n/getpage *website URL*")
+    bot.api.send_message(chat_id: message.chat.id, text: "if you want get image of a webpage type:\n/getpage *website URL*")
   end
 
   def do_stuff(match_results)
@@ -16,7 +16,7 @@ class Getpage < AbsPlugin
     system("wget \"#{link}\" -O #{temp_file}")
 
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_file, 'image/jpeg'))
-    bot.api.sendMessage(chat_id: message.chat.id, text: "🔎check out http2pic at https://http2pic.haschek.at")
+    bot.api.send_message(chat_id: message.chat.id, text: "🔎check out http2pic at https://http2pic.haschek.at")
 
     File.delete(temp_file)
   end
