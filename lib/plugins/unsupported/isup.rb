@@ -7,7 +7,7 @@ class Isup < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, parse_mode: "Markdown", text: "check if a website is up with */isup URL*")
+    bot.api.send_message(chat_id: message.chat.id, parse_mode: "Markdown", text: "check if a website is up with */isup URL*")
   end
 
   def do_stuff(match_results)
@@ -24,6 +24,6 @@ class Isup < AbsPlugin
         result_msg += " looks down from here!"
     end
 
-    bot.api.sendMessage(chat_id: message.chat.id, text: result_msg)
+    bot.api.send_message(chat_id: message.chat.id, text: result_msg)
   end
 end

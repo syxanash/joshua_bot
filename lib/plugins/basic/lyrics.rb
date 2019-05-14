@@ -58,7 +58,7 @@ class Lyrics < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'get lyrics from genius.com with /lyrics')
+    bot.api.send_message(chat_id: message.chat.id, text: 'get lyrics from genius.com with /lyrics')
   end
 
   def do_stuff(match_results)

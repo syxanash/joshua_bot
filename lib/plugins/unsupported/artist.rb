@@ -1,6 +1,5 @@
 require 'rest-client'
 require 'open-uri'
-require 'json'
 
 class Artist < AbsPlugin
   def command
@@ -8,7 +7,7 @@ class Artist < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "if you want get info about an artist type:\n/artist *Maher Zain*")
+    bot.api.send_message(chat_id: message.chat.id, text: "if you want get info about an artist type:\n/artist *Maher Zain*")
   end
 
   def do_stuff(match_results)
@@ -18,7 +17,7 @@ class Artist < AbsPlugin
     decoded = JSON.parse(json_resp)
 
     if decoded['artists']['items'].empty?
-      bot.api.sendMessage(chat_id: message.chat.id, text: 'Your artist name doesn\'t exist on my database 😞')
+      bot.api.send_message(chat_id: message.chat.id, text: 'Your artist name doesn\'t exist on my database 😞')
     else
       name = "#{decoded['artists']['items'][0]['name']}"
       category = "#{decoded['artists']['items'][0]['type']}"
@@ -33,7 +32,7 @@ Popularity: #{popularity}
 Total Follower: #{followers}
 MSG
 
-      bot.api.sendMessage(chat_id: message.chat.id, text: output_message)
+      bot.api.send_message(chat_id: message.chat.id, text: output_message)
     end
   end
 end

@@ -1,5 +1,4 @@
 require 'rest-client'
-require 'json'
 require 'cgi'
 
 class Jokes < AbsPlugin
@@ -8,7 +7,7 @@ class Jokes < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "if you want to make joke on someone type:\n/jokes *someone*")
+    bot.api.send_message(chat_id: message.chat.id, text: "if you want to make joke on someone type:\n/jokes *someone*")
   end
 
   def do_stuff(match_results)
@@ -24,6 +23,6 @@ class Jokes < AbsPlugin
     json_resp = RestClient.get(url_request)
     decoded = JSON.parse(json_resp)
 
-    bot.api.sendMessage(chat_id: message.chat.id, text: CGI.unescapeHTML(decoded["value"]["joke"]))
+    bot.api.send_message(chat_id: message.chat.id, text: CGI.unescapeHTML(decoded["value"]["joke"]))
   end
 end

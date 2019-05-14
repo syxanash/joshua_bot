@@ -35,7 +35,7 @@ Here's an example of a `config.json` once you have your API key set up:
 ```json
 {
   "token": "103414657:AAGh0I6l-CKf_TDu6CUNa7c7MgnfRbUDzMQ",
-  "pool_size": "4",
+  "temp_directory": "/tmp/joshua_bot_tmp",
   "plugin_folder": "basic",
   "password": ""
 }

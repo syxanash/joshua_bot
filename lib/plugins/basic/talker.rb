@@ -4,7 +4,7 @@ class Talker < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: "you can talk with the bot in a specific chat using:\n/talker *chatroom id* *sentence*\n😈 this is supposed to be a hidden feature available only for my maker!!!1")
+    bot.api.send_message(chat_id: message.chat.id, text: "you can talk with the bot in a specific chat using:\n/talker *chatroom id* *sentence*\n😈 this is supposed to be a hidden feature available only for my maker!!!1")
   end
 
   def do_stuff(match_results)
@@ -15,6 +15,6 @@ class Talker < AbsPlugin
       chatroom_id = message.chat.id
     end
 
-    bot.api.sendMessage(chat_id: chatroom_id, text: sentence)
+    bot.api.send_message(chat_id: chatroom_id, text: sentence)
   end
 end

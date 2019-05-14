@@ -4,7 +4,7 @@ class Remote < AbsPlugin
   end
 
   def show_usage
-    bot.api.sendMessage(chat_id: message.chat.id, text: 'do some system related things!')
+    bot.api.send_message(chat_id: message.chat.id, text: 'do some system related things!')
   end
 
   def do_stuff(match_results)
