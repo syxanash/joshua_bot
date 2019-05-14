@@ -69,13 +69,13 @@ class MessageHandler
     when '/ping', "/ping@#{bot_username}"
       @bot.api.send_message(chat_id: @user_message.chat.id, text: 'pong')
     when '/about', "/about@#{bot_username}"
-      text_value = <<~ABOUT
-        I was created by my lovely maker ^syx.*$
+      text_value = <<-ABOUT.gsub(/^ {6}/, '')
+      I was created by my lovely maker ^syx.*$
 
-        ⚠️ Three Laws of Robotics
-        🤖️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
-        🤖️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
-        🤖️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+      ⚠️ Three Laws of Robotics
+      🤖️ A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+      🤖️ A robot must obey any orders given to it by human beings, except where such orders would conflict with the First Law.
+      🤖️ A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
       ABOUT
       @bot.api.send_message(chat_id: @user_message.chat.id, text: text_value)
     when '/stop', "/stop@#{bot_username}"
