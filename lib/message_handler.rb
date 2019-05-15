@@ -41,8 +41,9 @@ class MessageHandler
       end
     end
 
-    PluginHandler.handle(@bot, @user_message)
-    check_simple_commands
+    matched_plugin = PluginHandler.handle(@bot, @user_message)
+
+    check_simple_commands unless matched_plugin
   end
 
   private
