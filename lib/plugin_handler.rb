@@ -1,6 +1,7 @@
 class PluginHandler
   def self.handle(bot, user_message)
     bot_username = bot.api.getMe['result']['username']
+    plugin_triggered = false
 
     session_buffer = {
       plugin: '',
@@ -23,8 +24,6 @@ class PluginHandler
 
     Logging.log.info "Now received: #{user_message.text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
 
-    replied_with_plugin = false
-
     AbsPlugin.descendants.each do |lib|
       # for each message create an instance of the plugin library
       plugin = lib.new
@@ -38,7 +37,7 @@ class PluginHandler
 
       begin
         if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
-          replied_with_plugin = true
+          plugin_triggered = true
 
           Logging.log.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
 
@@ -56,7 +55,7 @@ class PluginHandler
           # stop checking further plugins
           break
         elsif session_buffer['is_open']
-          replied_with_plugin = true
+          plugin_triggered = true
 
           # if the current user has a plugin waiting for a reply skip
           # the interpretation of other commands
@@ -68,16 +67,16 @@ class PluginHandler
           end
 
           if plugin.command.match(user_message.text)
-            replied_with_plugin = true
+            plugin_triggered = true
 
             # send the match result to do_stuff method if it needs to
             # do something with a particular command requiring arguments
             plugin.do_stuff(Regexp.last_match)
 
-            # if the plugin main regexp does't match the message
+            # if the plugin main regexp doesn't match the message
             # then show the plugin usage example
           elsif %r{\/#{plugin_name.downcase}?} =~ user_message.text
-            replied_with_plugin = true
+            plugin_triggered = true
 
             plugin.show_usage
           end
@@ -104,6 +103,6 @@ class PluginHandler
       end
     end
 
-    replied_with_plugin
+    plugin_triggered
   end
 end
