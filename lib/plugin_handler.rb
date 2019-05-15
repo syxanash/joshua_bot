@@ -1,6 +1,7 @@
 class PluginHandler
   def self.handle(bot, user_message)
     bot_username = bot.api.getMe['result']['username']
+    plugin_triggered = false
 
     session_buffer = {
       plugin: '',
@@ -36,6 +37,8 @@ class PluginHandler
 
       begin
         if session_buffer['is_open'] && session_buffer['plugin'] == plugin_name
+          plugin_triggered = true
+
           Logging.log.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
 
           session_buffer['content'] = user_message.text
@@ -52,6 +55,8 @@ class PluginHandler
           # stop checking further plugins
           break
         elsif session_buffer['is_open']
+          plugin_triggered = true
+
           # if the current user has a plugin waiting for a reply skip
           # the interpretation of other commands
           next
@@ -62,13 +67,17 @@ class PluginHandler
           end
 
           if plugin.command.match(user_message.text)
+            plugin_triggered = true
+
             # send the match result to do_stuff method if it needs to
             # do something with a particular command requiring arguments
             plugin.do_stuff(Regexp.last_match)
 
-            # if the plugin main regexp does't match the message
+            # if the plugin main regexp doesn't match the message
             # then show the plugin usage example
           elsif %r{\/#{plugin_name.downcase}?} =~ user_message.text
+            plugin_triggered = true
+
             plugin.show_usage
           end
         end
@@ -93,5 +102,7 @@ class PluginHandler
         )
       end
     end
+
+    plugin_triggered
   end
 end
