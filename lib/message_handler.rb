@@ -4,6 +4,7 @@ class MessageHandler
     @bot_password = BotConfig.config['password']
     @password_enabled = !@bot_password.empty?
     @chat_id_authenticated = {}
+    @users_authenticated = []
   end
 
   def handle(bot, user_message)
@@ -24,6 +25,7 @@ class MessageHandler
       unless @chat_id_authenticated[@user_message.chat.id]
         if @user_message.text == @bot_password
           @chat_id_authenticated[@user_message.chat.id] = true
+          @users_authenticated.push(@user_message.from.first_name)
 
           @bot.api.send_message(
             chat_id: @user_message.chat.id,
@@ -60,12 +62,16 @@ class MessageHandler
         text: 'did somebody just say Joshua?'
       )
     when '/users', "/users@#{bot_username}"
-      if @password_enabled
-        @bot.api.send_message(
-          chat_id: @user_message.chat.id,
-          text: "Current active chats: #{@chat_id_authenticated.size}"
-        )
-      end
+      # users command is valid only when bot access is protected by password
+      return unless @password_enabled
+
+      text_value = <<-USERS_AUTH.gsub(/^ {6}/, '')
+      Current active users: #{@users_authenticated.size}
+      Users authenticated:
+      #{@users_authenticated.map { |k| "👤 #{k}\n" }.join('')}
+      USERS_AUTH
+
+      @bot.api.send_message(chat_id: @user_message.chat.id, text: text_value)
     when '/ping', "/ping@#{bot_username}"
       @bot.api.send_message(chat_id: @user_message.chat.id, text: 'pong')
     when '/about', "/about@#{bot_username}"
