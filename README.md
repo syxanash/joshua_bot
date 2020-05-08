@@ -1,6 +1,6 @@
 # Joshua
 
-![logo](other/doc_assets/joshua.png)
+![logo](other/doc_assets/joshua.gif)
 
 A *plugins* based bot for [Telegram](https://telegram.org/) messaging app written in Ruby.
 
