@@ -32,11 +32,15 @@ class MessageHandler
             text: ">#{"\n" * 40}Shall we play a game?"
           )
 
+          # execute startup commands only after user has successfully logged in
+          # the original message object will be cloned and for each command
+          # will be sent a message to the bot
           if !BotConfig.config['startup_commands'].empty?
+            @user_message_cloned = @user_message.clone
+
             BotConfig.config['startup_commands'].each do |command|
               Logging.log.info "Executing startup command: `#{command}`"
               
-              @user_message_cloned = @user_message.clone
               @user_message_cloned.text = command
 
               matched_plugin = PluginHandler.handle(@bot, @user_message_cloned)
