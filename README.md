@@ -150,6 +150,20 @@ Some plugins which use the session buffer are:
 * `basic/morra.rb`
 * `spioncino/remote.rb`
 
+### Startup commands
+
+When a bot is protected by **password** you can execute a sequence of commands as soon as the user logs in. For instance if you take a look at `config.json` you'll find an array alled `startup_commands`. You can edit this variable and add your list of startup commands that you wish to execute after logging in.
+
+For example:
+
+```
+  "startup_commands": ["/diceroll 12", "/ping", "/morra"]
+```
+
+And this will be the output after entering the password correctly:
+
+<img src="other/doc_assets/screenshot_startup_commands.png" alt="screenshot_startup_commands" />
+
 ### Stopping a plugin
 
 In order to stop a bot from asking further inputs and replies from a user, perhaps because of a bug or an unforeseen loop condition in your code, you can type the command `/cancel` and the plugin will terminate its execution.
