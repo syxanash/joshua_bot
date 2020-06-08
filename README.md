@@ -152,7 +152,7 @@ Some plugins which use the session buffer are:
 
 ### Startup commands
 
-When a bot is protected by **password** you can execute a sequence of commands as soon as the user logs in. For instance if you take a look at `config.json` you'll find an array alled `startup_commands`. You can edit this variable and add your list of startup commands that you wish to execute after logging in.
+When a bot is protected by **password** you can execute a sequence of commands as soon as the user logs in. Take a look at `config.json` you'll find an array alled `startup_commands`. You can edit this variable and add your list of startup commands that you wish to execute after logging in.
 
 For example:
 
