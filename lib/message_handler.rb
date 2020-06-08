@@ -1,4 +1,3 @@
-require 'pp'
 class MessageHandler
   def initialize
     # check if bot needs password to execute commands
@@ -33,10 +32,10 @@ class MessageHandler
             text: ">#{"\n" * 40}Shall we play a game?"
           )
 
-          @modified_user_message = @user_message.clone
-          @modified_user_message.text = BotConfig.config['startup']
-
-          matched_plugin = PluginHandler.handle(@bot, @modified_user_message)
+          if !BotConfig.config['startup'].empty?
+            Logging.log.info "Executing startup command..."
+            @user_message.text = BotConfig.config['startup']
+          end
         else
           @bot.api.send_message(chat_id: @user_message.chat.id, text: 'LOGON:')
 
@@ -48,7 +47,6 @@ class MessageHandler
     end
 
     matched_plugin = PluginHandler.handle(@bot, @user_message)
-
     check_simple_commands unless matched_plugin
   end
 
