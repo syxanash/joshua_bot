@@ -68,7 +68,7 @@ class MacScan < AbsPlugin
       is_saved = false
       should_display = true
       devices_stored_list.each do |stored_device|
-        if device[1].upcase == stored_device['mac']
+        if device[1].upcase == stored_device['mac'].upcase
           is_saved = true
           should_display = stored_device['display']
 
