@@ -1,10 +1,10 @@
-class MacScan < AbsPlugin
+class WhoIsHome < AbsPlugin
   def command
-    /^\/macscan$/
+    /^\/whoishome$/
   end
 
   def show_usage
-    bot.api.send_message(chat_id: message.chat.id, text: 'type /macscan')
+    bot.api.send_message(chat_id: message.chat.id, text: 'type /whoishome')
   end
 
   def stored_devices
@@ -52,7 +52,7 @@ class MacScan < AbsPlugin
   def do_stuff(_match_results)
 
     # check if user wants to get the status of the plugin
-    Logging.log.info 'Invoked Mac Scanner plugin for a quick scan...'
+    Logging.log.info 'Invoked WhoIsHome plugin for a quick scan...'
 
     bot.api.send_message(
       chat_id: message.chat.id,
