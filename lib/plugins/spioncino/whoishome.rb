@@ -83,6 +83,10 @@ class WhoIsHome < AbsPlugin
       end
     end
 
+    if output_message.empty?
+      output_message += '🏡 no one seems to be home...'
+    end
+
     bot.api.send_message(chat_id: message.chat.id, text: output_message)
   end
 end
