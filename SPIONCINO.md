@@ -57,11 +57,11 @@ Command  | Description
 /takevideo | sends a 10 seconds video from the camera module. You need to edit the source code if you don't have the camera module, take a look at the method `take_video()` from `old_spione.rb`
 /wifinfo | returns the WiFi access point name which the Raspberry Pi is connected to and the IP address used on the network
 /remote | is an interactive command which allows you to poweroff the machine, reboot it or restart the Telegram Bot
-/macscan | see description below
+/whoishome | see description below
 
-## Macscan
+## Who is Home?
 
-Out of the box Spioncino folder will contain a plugin called `/macscan`. This plugin lists the devices connected to the network the bot is running from. It uses the tool `arp-scan` in order to perform the scan of the subnet. You can also specify a file which contains a list of aliases for each address. The file should be in the following format:
+Out of the box Spioncino folder will contain a plugin called `/whoishome`. This plugin lists the devices connected to the network the bot is running from. It uses the tool `arp-scan` in order to perform the scan of the subnet. You can also specify a file which contains a list of aliases for each address. The file should be in the following format:
 ```
 [
     {
