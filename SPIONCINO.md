@@ -2,6 +2,8 @@
 
 An extremely simple surveillance bot running on a **Raspberry Pi** 🍓
 
+<img src='https://i.imgur.com/RwNAY0i.jpg' height='250' />&nbsp;<img src='https://i.imgur.com/rMtcXqv.jpg' height='250' />
+
 ## Description
 
 The surveillance system is composed of a bot that has a plugin called `spione.rb`, a [PIR](https://en.wikipedia.org/wiki/Passive_infrared_sensor) [sensor](https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor/how-pirs-work) and [Raspberry Pi Camera Module](https://www.raspberrypi.org/products/camera-module-v2/). The plugin once activated will check the data coming from the PIR sensor which is used to detect movements of objects in a room. As soon as the sensor catches something for more than a few seconds the bot will send pictures and videos to the user.
