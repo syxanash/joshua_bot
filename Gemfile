@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "2.5.0"
 
-gem "telegram-bot-ruby", ">=0.8.6.1"
+gem 'telegram-bot-ruby', '~> 0.19.2'
 
 # gems used by plugins
 gem "rest-client"

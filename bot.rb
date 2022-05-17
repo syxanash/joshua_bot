@@ -44,10 +44,15 @@ Telegram::Bot::Client.run(token) do |bot|
 
   # searching for new messages
   bot.listen do |user_message|
-    # open a thread for every new message to answer users
-    # independently from each command.
-    Thread.new do
-      message_handler.handle(bot, user_message)
+    case user_message
+    when Telegram::Bot::Types::Message
+      # open a thread for every new message to answer users
+      # independently from each command.
+      Thread.new do
+        message_handler.handle(bot, user_message)
+      end
+    else
+      Logging.log.info 'Type not yet implemented'
     end
   end
 end
