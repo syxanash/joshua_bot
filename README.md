@@ -173,7 +173,7 @@ In order to stop a bot from asking further inputs and replies from a user, perha
 
 ![ruby lady](other/doc_assets/ruby-lady.png)
 
-You should definitely tell your wife about an awesome implementation of this bot as a simple surveillance system for your mansion: [spioncino](SPIONCINO.md)
+You should definitely tell your partner about an awesome implementation of this bot as a simple surveillance system for your mansion: [spioncino](SPIONCINO.md)
 
 ## Contributing
 
