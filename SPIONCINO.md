@@ -15,7 +15,7 @@ By default the camera used to take pictures and videos is the **Raspberry Pi Cam
 Install some dependencies which will be required for the surveillance plugin:
 
 ```
-$ sudo apt-get install streamer fswebcam python-picamera python3-picamera gpac
+$ sudo apt-get install streamer fswebcam python-picamera python3-picamera gpac imagemagick
 ```
 
 Clone this repository and then run bundle tool to install the dependencies.
