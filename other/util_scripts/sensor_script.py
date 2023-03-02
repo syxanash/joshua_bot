@@ -11,15 +11,13 @@ if len(sys.argv) != 2:
     exit(1)
 
 pir = MotionSensor(4)
-
-noticed = False
 filename = sys.argv[1]
 
+write_log(filename, '0')
+
 while True:
-    if pir.motion_detected:
-        if not noticed:
-            write_log(filename, '1') 
-            noticed = True
-    else:
-        write_log(filename, '')
-        noticed = False
+    pir.wait_for_motion()
+    write_log(filename, '1')
+
+    pir.wait_for_no_motion()
+    write_log(filename, '0')
