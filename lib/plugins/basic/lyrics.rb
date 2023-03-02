@@ -69,7 +69,7 @@ class Lyrics < AbsPlugin
     kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 
     reply_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-      keyboard: %w[yes no],
+      keyboard: [%w[yes no].map{ |item| { text: item } }],
       one_time_keyboard: true
     )
 

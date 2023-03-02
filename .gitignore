@@ -24,3 +24,5 @@ Icon
 Session.vim
 .netrwhist
 *~
+
+.vscode/
