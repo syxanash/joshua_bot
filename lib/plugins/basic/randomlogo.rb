@@ -63,7 +63,9 @@ class RandomLogo < AbsPlugin
       temp_array.delete_at(random_pos)
     end
 
-    keyboard_answers = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: answers.each_slice(1).to_a, one_time_keyboard: true)
+    keyboard_values = answers.map{ |item| { text: item } }
+
+    keyboard_answers = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [keyboard_values], one_time_keyboard: true)
     remove_keyboard = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{correct_answer_file}.png", 'image/png'))

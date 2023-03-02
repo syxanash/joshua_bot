@@ -1,8 +1,8 @@
 source "https://rubygems.org"
 
-ruby "2.5.0"
+ruby "3.2.1"
 
-gem 'telegram-bot-ruby', '~> 0.19.2'
+gem 'telegram-bot-ruby'
 
 # gems used by plugins
 gem "rest-client"

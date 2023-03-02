@@ -13,8 +13,9 @@ class Morra < AbsPlugin
     winner_message = 'no winners 😞'
     win_rules = [['📄', '🗿'], ['🗿', '✂️'], ['✂️', '📄']]
     answers_layout =
-      Telegram::Bot::Types::ReplyKeyboardMarkup
-      .new(keyboard: [game_values], one_time_keyboard: true)
+      Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+        keyboard: [game_values.map { |item| { text: item } }], one_time_keyboard: true
+      )
 
     bot.api.send_message(chat_id: message.chat.id, text: 'on my mark choose 🗿 📄 ✂️, ready?')
     sleep(2)
@@ -34,7 +35,7 @@ class Morra < AbsPlugin
 
     win_rules.each do |rule|
       if rule[0] == bot_choice && rule[1] == human_choice
-        winner_message = 'the machine #masterrace wins! 🤖'
+        winner_message = 'the machine wins! 🤖'
       elsif rule[1] == bot_choice && rule[0] == human_choice
         winner_message = 'filthy human beings...'
       end

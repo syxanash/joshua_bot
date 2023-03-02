@@ -15,11 +15,11 @@ class Remote < AbsPlugin
     }
 
     reply_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-      keyboard: commands_map.keys,
+      keyboard: [commands_map.keys.map{|item| { text: item }}],
       one_time_keyboard: true
     )
     confirm_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-      keyboard: %w[yes no],
+      keyboard: [%w[yes no].map{|item| { text: item }}],
       one_time_keyboard: true
     )
     no_keyboard = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
