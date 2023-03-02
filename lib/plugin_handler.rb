@@ -1,5 +1,5 @@
 class PluginHandler
-  def self.handle(bot, user_message)
+  def self.handle(bot, user_message, message_text)
     bot_username = bot.api.getMe['result']['username']
     plugin_triggered = false
 
@@ -22,7 +22,7 @@ class PluginHandler
       Logging.log.info "Created a new buffer file #{user_message.chat.id}"
     end
 
-    Logging.log.info "Now received: #{user_message.text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
+    Logging.log.info "Now received: #{message_text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
 
     AbsPlugin.descendants.each do |lib|
       # for each message create an instance of the plugin library
@@ -41,7 +41,7 @@ class PluginHandler
 
           Logging.log.info "Writing message into buffer for plugin #{session_buffer['plugin']}..."
 
-          session_buffer['content'] = user_message.text
+          session_buffer['content'] = message_text
           session_buffer['is_open'] = false
 
           bot.api.send_chat_action(
@@ -60,13 +60,13 @@ class PluginHandler
           # if the current user has a plugin waiting for a reply skip
           # the interpretation of other commands
           next
-        elsif !user_message.text.nil?
+        elsif !message_text.nil?
           # beautify message sent with @ format (used in groups)
-          if user_message.text.include? "@#{bot_username}"
-            user_message.text.slice! "@#{bot_username}"
+          if message_text.include? "@#{bot_username}"
+            message_text.slice! "@#{bot_username}"
           end
 
-          if plugin.command.match(user_message.text)
+          if plugin.command.match(message_text)
             plugin_triggered = true
 
             # send the match result to do_stuff method if it needs to
@@ -75,7 +75,7 @@ class PluginHandler
 
             # if the plugin main regexp doesn't match the message
             # then show the plugin usage example
-          elsif %r{\/#{plugin_name.downcase}?} =~ user_message.text
+          elsif %r{\/#{plugin_name.downcase}?} =~ message_text
             plugin_triggered = true
 
             plugin.show_usage

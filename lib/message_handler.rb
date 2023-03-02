@@ -9,10 +9,10 @@ class MessageHandler
 
   def handle(bot, user_message)
     @bot = bot
-    @user_message = user_message
+    message_text = user_message.text
 
-    if @user_message.date < Time.now.to_i - 10
-      Logging.log.info "#{@user_message.text} received while you were away from #{@user_message.from.first_name}, in #{@user_message.chat.id}"
+    if user_message.date < Time.now.to_i - 10
+      Logging.log.info "#{message_text} received while you were away from #{user_message.from.first_name}, in #{user_message.chat.id}"
 
       return
     end
@@ -22,13 +22,13 @@ class MessageHandler
     if @password_enabled
       Logging.log.info "Chat id authorized: #{@chat_id_authenticated}"
 
-      unless @chat_id_authenticated[@user_message.chat.id]
-        if @user_message.text == @bot_password
-          @chat_id_authenticated[@user_message.chat.id] = true
-          @users_authenticated.push(@user_message.from.first_name)
+      unless @chat_id_authenticated[user_message.chat.id]
+        if message_text == @bot_password
+          @chat_id_authenticated[user_message.chat.id] = true
+          @users_authenticated.push(user_message.from.first_name)
 
           @bot.api.send_message(
-            chat_id: @user_message.chat.id,
+            chat_id: user_message.chat.id,
             text: ">#{"\n" * 40}Shall we play a game?"
           )
 
@@ -36,19 +36,15 @@ class MessageHandler
           # the original message object will be cloned and for each command
           # will be sent a message to the bot
           if !BotConfig.config['startup_commands'].empty?
-            @user_message_cloned = @user_message.clone
-
             BotConfig.config['startup_commands'].each do |command|
               Logging.log.info "Executing startup command: `#{command}`"
-              
-              @user_message_cloned.text = command
 
-              matched_plugin = PluginHandler.handle(@bot, @user_message_cloned)
-              check_simple_commands(@user_message_cloned) unless matched_plugin
+              matched_plugin = PluginHandler.handle(@bot, user_message, command)
+              check_simple_commands(user_message, command) unless matched_plugin
             end
           end
         else
-          @bot.api.send_message(chat_id: @user_message.chat.id, text: 'LOGON:')
+          @bot.api.send_message(chat_id: user_message.chat.id, text: 'LOGON:')
 
           # jump to the next incoming message to safely skip the
           # interpreations of the message just given
@@ -57,16 +53,16 @@ class MessageHandler
       end
     end
 
-    matched_plugin = PluginHandler.handle(@bot, @user_message)
-    check_simple_commands(@user_message) unless matched_plugin
+    matched_plugin = PluginHandler.handle(@bot, user_message, message_text)
+    check_simple_commands(user_message, message_text) unless matched_plugin
   end
 
   private
 
-  def check_simple_commands(user_message)
+  def check_simple_commands(user_message, message_text)
     bot_username = @bot.api.getMe['result']['username']
 
-    case user_message.text
+    case message_text
     when '/start', "/start@#{bot_username}"
       @bot.api.send_message(
         chat_id: user_message.chat.id,
