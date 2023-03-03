@@ -100,10 +100,10 @@ class Spione < AbsPlugin
             take_video()
           rescue
             if (tries -= 1) >= 0
-                sleep 3
-                retry
+              sleep 3
+              retry
             else
-                puts '[!] SOMETHING WRONG HAPPENED WITH DEVICE!'
+              puts '[!] SOMETHING WRONG HAPPENED WITH DEVICE!'
             end
           end
 
@@ -142,10 +142,9 @@ class Spione < AbsPlugin
   end
 
   def take_photo(num = 5)
-    (0...num).each do |i|
+    num.times do
       temp_name = 'temp_photo.jpg'
-
-      system("python other/util_scripts/camera_script.py")
+      system("raspistill -o #{temp_name} -w 2592 -h 1944")
 
       bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_name, 'image/jpeg'))
       File.delete(temp_name)
@@ -161,7 +160,7 @@ class Spione < AbsPlugin
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
     bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new(temp_name + '.mp4', 'video/mp4'))
-    
+
     File.delete(temp_name + '.h264', temp_name + '.mp4')
   end
 end
