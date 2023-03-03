@@ -72,7 +72,7 @@ class OldSpione < AbsPlugin
 
     # put in a separate thread the python script which checks the PIR sensor
     Thread.new {
-      @script_pid = IO.popen("python other/util_scripts/sensor_script.py #{SENSOR_OUTPUT_FILE}").pid
+      @script_pid = IO.popen("python utils/sensor_script.py #{SENSOR_OUTPUT_FILE}").pid
     }
 
     counter = 0
