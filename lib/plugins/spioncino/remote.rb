@@ -9,7 +9,7 @@ class Remote < AbsPlugin
 
   def do_stuff(match_results)
     commands_map = {
-      'stop bot' => Proc.new { Kernel.exit }, 
+      'stop bot' => Proc.new { Kernel.exit },
       'restart system' => Proc.new { system('sudo reboot') },
       'poweroff system' => Proc.new { system('sudo poweroff') }
     }
@@ -35,10 +35,10 @@ class Remote < AbsPlugin
         bot.api.send_message(chat_id: message.chat.id, text: "I won't do anything!", reply_markup: no_keyboard)
       elsif confirm_reply == 'yes'
         bot.api.send_message(chat_id: message.chat.id, text: "I'm going to #{human_choice}", reply_markup: no_keyboard)
-        
+
         commands_map[human_choice].call
       else
-        bot.api.send_message(chat_id: message.chat.id, text: "Enter valid option", reply_markup: no_keyboard)
+        bot.api.send_message(chat_id: message.chat.id, text: 'Enter valid option', reply_markup: no_keyboard)
       end
     else
       bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize the command!", reply_markup: no_keyboard)

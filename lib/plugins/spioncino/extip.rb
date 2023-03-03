@@ -10,11 +10,11 @@ class Extip < AbsPlugin
   end
 
   def do_stuff(match_results)
-    link = "https://httpbin.org/ip"
+    link = 'https://httpbin.org/ip'
 
     json_resp = RestClient.get(link)
     decoded = JSON.parse(json_resp)
 
-    bot.api.send_message(chat_id: message.chat.id, text: "my external ip is: #{decoded["origin"]}")
+    bot.api.send_message(chat_id: message.chat.id, text: "my external ip is: #{decoded['origin']}")
   end
 end

@@ -4,10 +4,10 @@ class TakeVideo < AbsPlugin
   end
 
   def show_usage
-    bot.api.send_message(chat_id: message.chat.id, text: "type /takevideo")
+    bot.api.send_message(chat_id: message.chat.id, text: 'type /takevideo')
   end
 
-  def do_stuff(match_results)
+  def do_stuff(_match_results)
     temp_name = "#{Time.now.to_i}_spy_video"
 
     system("raspivid -o #{temp_name}.h264 -w 1280 -h 720 -t 10000")
