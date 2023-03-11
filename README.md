@@ -35,6 +35,7 @@ Here's an example of a `config.json` once you have your API key set up:
 ```json
 {
   "token": "103414657:AAGh0I6l-CKf_TDu6CUNa7c7MgnfRbUDzMQ",
+  "prod": true,
   "temp_directory": "/tmp/joshua_bot_tmp",
   "plugin_folder": "basic",
   "password": "",
@@ -168,6 +169,10 @@ And this will be the output after entering the password correctly:
 ### Stopping a plugin
 
 In order to stop a bot from asking further inputs and replies from a user, perhaps because of a bug or an unforeseen loop condition in your code, you can type the command `/cancel` and the plugin will terminate its execution.
+
+### Logging
+
+By default, a log file will be created in /tmp/joshua_bot_tmp (you can change this by editing the `temp_directory` name in `config.json`). Alternatively, if you'd like to redirect all output to STDOUT while testing your bot, simply change the variable `prod` to `false` in `config.json`.
 
 ## Spioncino
 

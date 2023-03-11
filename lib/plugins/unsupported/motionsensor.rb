@@ -1,3 +1,4 @@
+# gem "arduino_firmata" first
 require 'arduino_firmata'
 
 class MotionSensor < AbsPlugin
