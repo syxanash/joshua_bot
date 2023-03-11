@@ -172,7 +172,7 @@ In order to stop a bot from asking further inputs and replies from a user, perha
 
 ### Logging
 
-By default, a log file will be created in /tmp/joshua_bot_tmp (you can change this by editing the `temp_directory` name in `config.json`). Alternatively, if you'd like to redirect all output to STDOUT while testing your bot, simply change the variable `prod` to `false` in `config.json`.
+By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change this by editing the `temp_directory` name in `config.json`). Alternatively, if you'd like to redirect all output to STDOUT while testing your bot, simply change the variable `prod` to `false` in `config.json`.
 
 ## Spioncino
 
