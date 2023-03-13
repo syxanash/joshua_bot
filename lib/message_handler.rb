@@ -1,7 +1,7 @@
 class MessageHandler
   def initialize
     @bot_password = BotConfig.config['password']
-    @ai_handler = AiHandler.new
+    @ai_handler = AiHandler.new(BotConfig.config['openai_token'])
     @password_enabled = !@bot_password.empty?
     @chat_id_authenticated = {}
     @users_authenticated = []
@@ -64,7 +64,9 @@ class MessageHandler
     matched_simple_commands = check_simple_commands(user_message, message_text) unless matched_plugin
 
     if !matched_simple_commands && !matched_plugin
-      @ai_handler.ask(message_text)
+      return if user_message.chat.type == 'group' && !message_text.include?(@bot.api.getMe['result']['username'])
+
+      @ai_handler.ask(@bot, user_message, message_text)
     end
   end
 
@@ -80,11 +82,6 @@ class MessageHandler
       @bot.api.send_message(
         chat_id: user_message.chat.id,
         text: 'Greetings, Professor Falken.'
-      )
-    when /josh/i
-      @bot.api.send_message(
-        chat_id: user_message.chat.id,
-        text: 'did somebody just say Joshua?'
       )
     when '/users', "/users@#{bot_username}"
       # users command is valid only when bot access is protected by password
