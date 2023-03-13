@@ -1,7 +1,7 @@
 class MessageHandler
   def initialize
-    # check if bot needs password to execute commands
     @bot_password = BotConfig.config['password']
+    @ai_handler = AiHandler.new
     @password_enabled = !@bot_password.empty?
     @chat_id_authenticated = {}
     @users_authenticated = []
@@ -10,6 +10,9 @@ class MessageHandler
   def handle(bot, user_message)
     @bot = bot
     message_text = user_message.text
+
+    matched_simple_commands = false
+    matched_plugin = false
 
     if user_message.date < Time.now.to_i - 10
       Logging.log.info "#{message_text} received while you were away from #{user_message.from.first_name}, in #{user_message.chat.id}"
@@ -43,6 +46,10 @@ class MessageHandler
               check_simple_commands(user_message, command) unless matched_plugin
             end
           end
+
+          # jump to the next incoming message to safely skip reinterpreting the
+          # password as a message
+          return
         else
           @bot.api.send_message(chat_id: user_message.chat.id, text: 'LOGON:')
 
@@ -54,13 +61,19 @@ class MessageHandler
     end
 
     matched_plugin = PluginHandler.handle(@bot, user_message, message_text)
-    check_simple_commands(user_message, message_text) unless matched_plugin
+    matched_simple_commands = check_simple_commands(user_message, message_text) unless matched_plugin
+
+    if !matched_simple_commands && !matched_plugin
+      @ai_handler.ask(message_text)
+    end
   end
 
   private
 
   def check_simple_commands(user_message, message_text)
     bot_username = @bot.api.getMe['result']['username']
+
+    message_matched = true
 
     case message_text
     when '/start', "/start@#{bot_username}"
@@ -102,6 +115,10 @@ class MessageHandler
         text: ">#{"\n" * 40}A strange game. The only winning move is not to play",
         reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
       )
+    else
+      message_matched = false
     end
+
+    message_matched
   end
 end
