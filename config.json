@@ -1,5 +1,6 @@
 {
   "token": "",
+  "openai_token": "",
   "prod": true,
   "temp_directory": "/tmp/joshua_bot_tmp",
   "plugin_folder": "basic",

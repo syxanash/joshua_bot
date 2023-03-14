@@ -1,4 +1,5 @@
 require 'telegram/bot'
+require 'openai'
 require 'json'
 require 'fileutils'
 
@@ -6,6 +7,7 @@ require './lib/logging'
 require './lib/bot_config'
 require './lib/plugin_handler'
 require './lib/message_handler'
+require './lib/ai_handler'
 require './lib/abs_plugin'
 
 # create a folder in tmp directory for this bot

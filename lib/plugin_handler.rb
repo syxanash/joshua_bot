@@ -61,12 +61,10 @@ class PluginHandler
           # the interpretation of other commands
           next
         elsif !message_text.nil?
-          # beautify message sent with @ format (used in groups)
-          if message_text.include? "@#{bot_username}"
-            message_text.slice! "@#{bot_username}"
-          end
+          # remove the bot mention "@your_bot_name" from message text (used in groups)
+          unmentioned_text = message_text.include?("@#{bot_username}") ? message_text.gsub("@#{bot_username}", '') : message_text
 
-          if plugin.command.match(message_text)
+          if plugin.command.match(unmentioned_text)
             plugin_triggered = true
 
             # send the match result to do_stuff method if it needs to
@@ -75,7 +73,7 @@ class PluginHandler
 
             # if the plugin main regexp doesn't match the message
             # then show the plugin usage example
-          elsif %r{\/#{plugin_name.downcase}?} =~ message_text
+          elsif %r{\/#{plugin_name.downcase}?} =~ unmentioned_text
             plugin_triggered = true
 
             plugin.show_usage
