@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.1'
 
-gem 'ruby-openai'
+gem 'ruby-openai', '~> 3.5'
 gem 'telegram-bot-ruby'
 
 # gems used by plugins

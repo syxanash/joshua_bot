@@ -48,8 +48,6 @@ GEM
     netrc (0.11.0)
     nokogiri (1.14.2-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.14.2-x86_64-darwin)
-      racc (~> 1.4)
     racc (1.6.2)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
@@ -72,14 +70,13 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
-  x86_64-darwin-21
 
 DEPENDENCIES
   fileutils
   genius
   nokogiri
   rest-client
-  ruby-openai
+  ruby-openai (~> 3.5)
   similar_text
   telegram-bot-ruby
 
@@ -87,4 +84,4 @@ RUBY VERSION
    ruby 3.2.1p31
 
 BUNDLED WITH
-   2.4.6
+   2.4.8
