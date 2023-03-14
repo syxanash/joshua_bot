@@ -1,12 +1,13 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-ruby "3.2.1"
+ruby '3.2.1'
 
+gem 'openai'
 gem 'telegram-bot-ruby'
 
 # gems used by plugins
-gem "rest-client"
-gem "genius"
-gem "similar_text"
-gem "nokogiri"
-gem "fileutils"
+gem 'fileutils'
+gem 'genius'
+gem 'nokogiri'
+gem 'rest-client'
+gem 'similar_text'

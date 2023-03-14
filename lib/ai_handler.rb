@@ -1,5 +1,3 @@
-require 'openai'
-
 class AiHandler
   def initialize(token)
     @api_token = token

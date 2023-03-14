@@ -35,6 +35,7 @@ Here's an example of a `config.json` once you have your API key set up:
 ```json
 {
   "token": "103414657:AAGh0I6l-CKf_TDu6CUNa7c7MgnfRbUDzMQ",
+  "openai_token": "",
   "prod": true,
   "temp_directory": "/tmp/joshua_bot_tmp",
   "plugin_folder": "basic",
@@ -173,6 +174,13 @@ In order to stop a bot from asking further inputs and replies from a user, perha
 ### Logging
 
 By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change this by editing the `temp_directory` name in `config.json`). Alternatively, if you'd like to redirect all output to STDOUT while testing your bot, simply change the variable `prod` to `false` in `config.json`.
+
+## ![new](https://i.imgur.com/UfmDKDV.gif) OpenAI Integration
+
+Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. To enable ChatGPT enter your OpenAI API token in `config.json` by editing the attribute: `openai_token` then customize the `prompt` method in `ai_handler.rb` (or just leave the default one).
+When OpenAI token is entered in the config file, all messages sent to Joshua that do not correspond to direct commands will be used in a prompt for ChatGPT.
+
+<img src="other/doc_assets/screenshot_gpt.png" alt="screenshot chatgpt" height="400" />
 
 ## Spioncino
 

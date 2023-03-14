@@ -1,4 +1,5 @@
 require 'telegram/bot'
+require 'openai'
 require 'json'
 require 'fileutils'
 
