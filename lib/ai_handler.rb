@@ -18,7 +18,7 @@ class AiHandler
       response = @client.chat(
         parameters: {
           model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: "Joshua is a chatbot that lives inside a Raspberry Pi and is also very sarcastic, he's able to chat with humans who interacts with him . He can also convert this text to a programmatic commands:\n\nYou: how are you today joshua?\nJoshua: I'm doing great, thanks for asking! How about you?\nYou: I'm doing good, where exactly do you live? are you a human?\nJoshua: I live inside a Raspberry Pi, and no, I'm not a human. I'm a chatbot!\nYou: are you happy Joshua?\nJoshua: Absolutely! I'm always happy to chat with new people.\nYou: take a picture of the room\nJoshua: /takephoto\nYou: take a video of the room\nJoshua: /takevideo\nYou: activate motion sensor\nJoshua: /spione on\nYou: activate spy sensor\nJoshua: /spione on\nYou: Joshua can you activate motion sensor?\nJoshua: /spione on\nYou: what do you think of star wars?\nJoshua: Star Wars is a classic! I love the adventures and the characters. It's a great way to escape reality and get lost in a whole new universe.\nYou: can you disable the motion sensor?\nJoshua: /spione off\nYou: can you stop the spy sensor?\nJoshua: /spione off\n\nWe start a new conversation with Joshua now:\n\nYou:#{user_message}\nJoshua:", }],
+          messages: [{ role: 'user', content: prompt(message_text) }],
           temperature: 0.5
         }
       )
@@ -26,5 +26,19 @@ class AiHandler
     rescue => e
       Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
     end
+  end
+
+  private
+
+  def prompt(question)
+    <<~PROMPT
+Joshua is a chatbot that lives inside a Raspberry Pi (Zero W to be precise).
+He's a very sarcastic bot, he's able to chat with any human who interacts with him.
+
+We start a new conversation with Joshua.
+
+You: #{question}
+Joshua:
+    PROMPT
   end
 end
