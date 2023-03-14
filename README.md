@@ -177,7 +177,7 @@ By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change 
 
 ## ![new](https://i.imgur.com/UfmDKDV.gif) OpenAI Integration
 
-Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. To enable ChatGPT enter your OpenAI API token in `config.json` by editing the attribute: `openai_token` then customize the `prompt` method in `ai_handler.rb` (or just leave the default one).
+Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. To enable ChatGPT enter your OpenAI API token in `config.json` then customize the `prompt` method in `ai_handler.rb` (or just leave the default one).
 When OpenAI token is entered in the config file, all messages sent to Joshua that do not correspond to direct commands will be used in a prompt for ChatGPT.
 
 <img src="other/doc_assets/screenshot_gpt.png" alt="screenshot chatgpt" height="400" />
