@@ -1,6 +1,10 @@
 class AiHandler
+  MAX_INTERACTIONS_MEMORY = 10
+
   def initialize(token)
     @api_token = token
+    @previous_interactions = []
+
     if !@api_token.empty?
       Logging.log.info 'Initialized OpenAI client'
       @client = OpenAI::Client.new(access_token: @api_token)
@@ -20,7 +24,12 @@ class AiHandler
           temperature: 0.5
         }
       )
-      bot.api.send_message(chat_id: user_message.chat.id, text: response.dig('choices', 0, 'message', 'content'))
+
+      response_text = response.dig('choices', 0, 'message', 'content')
+      bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
+
+      @previous_interactions.push({ question: message_text, answer: response_text })
+      @previous_interactions.shift if @previous_interactions.size >= MAX_INTERACTIONS_MEMORY
     rescue => e
       Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
     end
@@ -35,6 +44,7 @@ He's a very sarcastic bot, he's able to chat with any human who interacts with h
 
 We start a new conversation with Joshua.
 
+#{@previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")}
 You: #{question}
 Joshua:
     PROMPT
