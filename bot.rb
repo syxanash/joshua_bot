@@ -41,20 +41,30 @@ end
 
 message_handler = MessageHandler.new
 
-Telegram::Bot::Client.run(token) do |bot|
-  Logging.log.info 'Bot started'
+begin
+  Telegram::Bot::Client.run(token) do |bot|
+    Logging.log.info 'Bot started'
 
-  # searching for new messages
-  bot.listen do |user_message|
-    case user_message
-    when Telegram::Bot::Types::Message
-      # open a thread for every new message to answer users
-      # independently from each command.
-      Thread.new do
-        message_handler.handle(bot, user_message)
+    # searching for new messages
+    bot.listen do |user_message|
+      case user_message
+      when Telegram::Bot::Types::Message
+        # open a thread for every new message to answer users
+        # independently from each command.
+        Thread.new do
+          message_handler.handle(bot, user_message)
+        end
+      else
+        Logging.log.info 'Type not yet implemented'
       end
-    else
-      Logging.log.info 'Type not yet implemented'
     end
   end
+rescue Telegram::Bot::Exceptions::ResponseError => e
+  if e.error_code.to_s == '502'
+    Logging.log.error 'Telegram Returned Error 502'
+    retry
+  end
+rescue Exception => e
+  Logging.log.error 'Bot task failed failed unexpectedly, restarting the bot...'
+  retry
 end
