@@ -61,7 +61,7 @@ begin
   end
 rescue Telegram::Bot::Exceptions::ResponseError => e
   if e.error_code.to_s == '502'
-    Logging.log.error 'Telegram Returned Error 502'
+    Logging.log.error 'Telegram returned error 502'
     retry
   end
 rescue Exception => e
