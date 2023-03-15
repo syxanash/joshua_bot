@@ -1,7 +1,7 @@
 class MessageHandler
   def initialize
     @bot_password = BotConfig.config['password']
-    @ai_handler = AiHandler.new(BotConfig.config['openai_token'])
+    @ai_handler = AiHandler.new
     @password_enabled = !@bot_password.empty?
     @chat_id_authenticated = {}
     @users_authenticated = []

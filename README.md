@@ -35,12 +35,16 @@ Here's an example of a `config.json` once you have your API key set up:
 ```json
 {
   "token": "103414657:AAGh0I6l-CKf_TDu6CUNa7c7MgnfRbUDzMQ",
-  "openai_token": "",
   "prod": true,
   "temp_directory": "/tmp/joshua_bot_tmp",
   "plugin_folder": "basic",
   "password": "",
-  "startup_commands": ["/xkcd"]
+  "startup_commands": ["/xkcd"],
+  "openai": {
+    "token": "",
+    "max_interaction_history": 10,
+    "log_prompts": true
+  }
 }
 ```
 
@@ -178,9 +182,11 @@ By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change 
 ## ![new](https://i.imgur.com/UfmDKDV.gif) OpenAI Integration
 
 Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. To enable ChatGPT enter your OpenAI API token in `config.json` then customize the `prompt` method in [ai_handler.rb](lib/ai_handler.rb) (or just leave the default one).
-When OpenAI integration is turned on all messages sent to Joshua that do not correspond to direct commands will be used in a prompt for ChatGPT. By default Joshua will remember up to 10 previous conversations between you and the bot, but if you want to reduce the amount of tokens sent to OpenAI you can change the constant `MAX_INTERACTIONS_MEMORY` in [ai_handler.rb](lib/ai_handler.rb).
+When OpenAI integration is turned on all messages sent to Joshua that do not correspond to direct commands will be used in a prompt for ChatGPT. By default Joshua will remember up to 10 previous conversations between you and the bot, but if you want to reduce the amount of tokens sent to OpenAI you can change the value of `max_interaction_history` in `config.json`.
 
 <img src="other/doc_assets/screenshot_gpt.png" alt="screenshot chatgpt" height="400" />
+
+This feature is completely optional and this bot will work even without OpenAI.
 
 ## Spioncino
 

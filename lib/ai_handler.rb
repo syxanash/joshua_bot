@@ -1,8 +1,6 @@
 class AiHandler
-  MAX_INTERACTIONS_MEMORY = 10
-
-  def initialize(token)
-    @api_token = token
+  def initialize
+    @api_token = BotConfig.config['openai']['token']
     @previous_interactions = []
 
     if !@api_token.empty?
@@ -17,10 +15,13 @@ class AiHandler
     Logging.log.info 'Sending user message inside prompt to OpenAI...'
 
     begin
+      prompt_message = prompt(message_text)
+      Logging.log.info("Prompt sent:\n#{prompt_message}") if BotConfig.config['openai']['log_prompts']
+
       response = @client.chat(
         parameters: {
           model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: prompt(message_text) }],
+          messages: [{ role: 'user', content: prompt_message }],
           temperature: 0.5
         }
       )
@@ -29,7 +30,10 @@ class AiHandler
       bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
 
       @previous_interactions.push({ question: message_text, answer: response_text })
-      @previous_interactions.shift if @previous_interactions.size >= MAX_INTERACTIONS_MEMORY
+
+      if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
+        @previous_interactions.shift
+      end
     rescue => e
       Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
     end
