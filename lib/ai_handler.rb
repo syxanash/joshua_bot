@@ -3,6 +3,7 @@ class AiHandler
     @api_token = BotConfig.config['openai']['token']
     @recognize_plugins = BotConfig.config['openai']['recognize_plugins']
     @previous_interactions = []
+    @conversation_history = ''
 
     if !@api_token.empty?
       Logging.log.info 'Initialized OpenAI client'
@@ -53,10 +54,9 @@ class AiHandler
     end
 
     @previous_interactions.push({ question: message_text, answer: response_text })
+    @previous_interactions.shift if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
 
-    if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
-      @previous_interactions.shift
-    end
+    @conversation_history = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
   rescue => e
     Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
   end
@@ -89,14 +89,12 @@ class AiHandler
   end
 
   def chat_prompt(question)
-    old_conversations = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
-
     generated_prompt = <<~PROMPT
 Joshua is a helpful chatbot that lives inside a Raspberry Pi (Zero W to be precise).
 He's a very sarcastic bot, he's able to chat with any human who interacts with him.
 
 We start a new conversation with Joshua.
-#{old_conversations}
+#{@conversation_history}
 You: #{question}
 Joshua:
     PROMPT
@@ -111,8 +109,6 @@ Joshua:
       plugin_training_conversation += example.map { |item| "You: #{item[:description]}\nJoshua: #{item[:command]}\n" }.join
     end
 
-    old_conversations = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
-
     generated_prompt = <<~PROMPT
 Joshua is a helpful chatbot capable of translating text to a programmatic command, for example:
 
@@ -120,7 +116,7 @@ Joshua is a helpful chatbot capable of translating text to a programmatic comman
 When no text matches a programmatic command Joshua responds with: UNRECOGNIZED
 
 We start a new conversation with Joshua.
-#{old_conversations}
+#{@conversation_history}
 You: #{question}
 Joshua:
     PROMPT
