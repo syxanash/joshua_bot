@@ -46,17 +46,13 @@ class MessageHandler
               check_simple_commands(user_message, command) unless matched_plugin
             end
           end
-
-          # jump to the next incoming message to safely skip reinterpreting the
-          # password as a message
-          return
         else
           @bot.api.send_message(chat_id: user_message.chat.id, text: 'LOGON:')
-
-          # jump to the next incoming message to safely skip the
-          # interpreations of the message just given
-          return
         end
+
+        # jump to the next incoming message to safely skip the
+        # interpreations of the message just given
+        return
       end
     end
 
