@@ -38,13 +38,20 @@ class AiHandler
   def ask(bot, user_message, message_text)
     return if @api_token.empty?
 
-    begin
-      matched_plugin = false
-      prompt_message = ''
-      response_text = ''
+    matched_plugin = false
+    prompt_message = ''
+    response_text = ''
 
-      if @recognize_plugins
-        prompt_message = plugin_prompt(message_text)
+    if @recognize_plugins
+      plugin_examples = []
+
+      AbsPlugin.descendants.each do |plugin|
+        examples_list = plugin.new.examples
+        plugin_examples.push(examples_list) unless examples_list.empty?
+      end
+
+      if !plugin_examples.empty?
+        prompt_message = plugin_prompt(message_text, plugin_examples)
 
         Logging.log.info 'Sending plugin interpretation to OpenAI...'
         Logging.log.info "Plugin prompt sent:\n#{prompt_message}" if BotConfig.config['openai']['log_prompts']
@@ -52,30 +59,31 @@ class AiHandler
         bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
 
         response_text = send_completions_prompt(prompt_message)
-        matched_plugin = PluginHandler.handle(bot, user_message, response_text)
         Logging.log.info "Command received from OpenAI: \"#{response_text}\""
+
+        matched_plugin = PluginHandler.handle(bot, user_message, response_text)
       end
-
-      if !matched_plugin || !@recognize_plugins
-        prompt_message = chat_prompt(message_text)
-
-        Logging.log.info 'Sending chat conversation to OpenAI...'
-        Logging.log.info "Chat prompt sent:\n#{prompt_message}" if BotConfig.config['openai']['log_prompts']
-
-        bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
-
-        response_text = send_chat_prompt(prompt_message)
-        bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
-      end
-
-      @previous_interactions.push({ question: message_text, answer: response_text })
-
-      if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
-        @previous_interactions.shift
-      end
-    rescue => e
-      Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
     end
+
+    if !matched_plugin || !@recognize_plugins
+      prompt_message = chat_prompt(message_text)
+
+      Logging.log.info 'Sending chat conversation to OpenAI...'
+      Logging.log.info "Chat prompt sent:\n#{prompt_message}" if BotConfig.config['openai']['log_prompts']
+
+      bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
+
+      response_text = send_chat_prompt(prompt_message)
+      bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
+    end
+
+    @previous_interactions.push({ question: message_text, answer: response_text })
+
+    if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
+      @previous_interactions.shift
+    end
+  rescue => e
+    Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
   end
 
   private
@@ -96,12 +104,11 @@ Joshua:
     generated_prompt.chomp
   end
 
-  def plugin_prompt(question)
+  def plugin_prompt(question, plugin_examples)
     plugin_training_conversation = ''
 
-    AbsPlugin.descendants.each do |lib|
-      plugin = lib.new
-      plugin_training_conversation += plugin.examples.map { |item| "You: #{item[1]}\nJoshua: #{item[0]}\n" unless item.empty? }.join('')
+    plugin_examples.each do |example|
+      plugin_training_conversation += example.map { |item| "You: #{item[:description]}\nJoshua: #{item[:command]}\n" }.join
     end
 
     old_conversations = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
