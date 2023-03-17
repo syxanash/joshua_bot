@@ -10,31 +10,6 @@ class AiHandler
     end
   end
 
-  def send_chat_prompt(prompt_message)
-    response = @client.chat(
-      parameters: {
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: prompt_message }],
-        temperature: 0.5
-      }
-    )
-
-    response.dig('choices', 0, 'message', 'content')
-  end
-
-  def send_completions_prompt(prompt_message)
-    response = @client.completions(
-      parameters: {
-        model: 'text-davinci-003',
-        prompt: prompt_message,
-        temperature: 0.5,
-        max_tokens: 10
-      }
-    )
-
-    response['choices'].map { |c| c['text'] }.join.lstrip
-  end
-
   def ask(bot, user_message, message_text)
     return if @api_token.empty?
 
@@ -87,6 +62,31 @@ class AiHandler
   end
 
   private
+
+  def send_chat_prompt(prompt_message)
+    response = @client.chat(
+      parameters: {
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt_message }],
+        temperature: 0.5
+      }
+    )
+
+    response.dig('choices', 0, 'message', 'content')
+  end
+
+  def send_completions_prompt(prompt_message)
+    response = @client.completions(
+      parameters: {
+        model: 'text-davinci-003',
+        prompt: prompt_message,
+        temperature: 0.5,
+        max_tokens: 10
+      }
+    )
+
+    response['choices'].map { |c| c['text'] }.join.lstrip
+  end
 
   def chat_prompt(question)
     old_conversations = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
