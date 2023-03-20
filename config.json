@@ -7,8 +7,8 @@
   "startup_commands": [],
   "openai": {
     "token": "",
+    "recognize_plugins": true,
     "max_interaction_history": 5,
-    "log_prompts": false,
-    "recognize_plugins": true
+    "log_prompts": false
   }
 }
