@@ -181,12 +181,31 @@ By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change 
 
 ## ![new](https://i.imgur.com/UfmDKDV.gif) OpenAI Integration
 
-Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. To enable ChatGPT enter your OpenAI API token in `config.json` then customize the `prompt` method in [ai_handler.rb](lib/ai_handler.rb) (or just leave the default one).
-When OpenAI integration is turned on all messages sent to Joshua that do not correspond to direct commands will be used in a prompt for ChatGPT. By default Joshua will remember up to 10 previous conversations between you and the bot, but if you want to reduce the amount of tokens sent to OpenAI you can change the value of `max_interaction_history` in `config.json`.
+Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. This feature is **completely optional** and this bot will work even without OpenAI.<br>
+OpenAI APIs can be used to interpret commands of various plugins or to just talk to your bot using ChatGPT.
+To enable the bot to use OpenAI, enter your [API Token](https://openai.com/blog/openai-api) in `config.json`. You can customize different things in `openai` segment, for instance:
 
-<img src="other/doc_assets/screenshot_gpt.png" alt="screenshot chatgpt" height="400" />
+* the max number of conversation messages to store in the prompt to give your bot a bit of context when replying to a message
+* the ability to recognize and execute plugins simply by talking to your bot
+* store the generated OpenAI prompts inside the logs
 
-This feature is completely optional and this bot will work even without OpenAI.
+<img src="other/doc_assets/screenshot_plugins_conversation.png" alt="screenshot chatgpt" height="400" />
+
+In order to let the bot recognize and execute plugins simply by chatting with it, you will need to add the examples when creating new custom plugins. _Examples_ will be used to train the bot to recognize the text based on the description and execute the related command.
+
+This is the format you will need to follow:
+
+```rb
+def examples
+  [
+    { command: '/diceroll',    description: 'return a random number from 1 to 6' },
+    { command: '/diceroll 10', description: 'return a random number from 1 to 10' }
+  ]
+end
+```
+
+Make sure the command in _examples_ matches the regex in `command` method of your plugin!
+Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [xkcd.rb](lib/plugins/xkcd.rb), [lyrics.rb](lib/plugins/lyrics.rb), [randomlogo.rb](lib/plugins/randomlogo.rb) 
 
 ## Spioncino
 
