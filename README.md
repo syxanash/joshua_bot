@@ -111,7 +111,7 @@ For instance the plugin [Spione](lib/plugins/spioncino/spione.rb) will call the 
 
 ### do_stuff
 
-This method will contain the actual code executed when the command is invoked. You can send simple text messages to the user (see the plugin **Fortune**), images (see **Xkcd** plugin) or audio messages (see **spioncino/Say**).
+This method will contain the actual code executed when the command is invoked. You can send simple text messages to the user (see the plugin [Fortune](lib/plugins/basic/fortune.rb)), images (see [Xkcd](lib/plugins/basic/xkcd.rb) plugin) or audio messages (see [Say](lib/plugins/spioncino/say.rb)).
 
 ## Interacting with plugins
 
@@ -121,7 +121,7 @@ You can interact with plugins either by passing **additional parameters** when c
 
 Additional command's parameters will be stored in the formal parameter `match_result` of the method `do_stuff`. The plugin's additional parameters will be created if you define a regular expression which accepts extra parameters like:
 
-`/^\/diceroll\s?([1-9]*?)?$/`
+`/^\/diceroll\s?(\d*?)?$/`
 
 In this case **DiceRoll** plugin can be invoked by using the command `/diceroll` or you can pass an extra parameter as an integer like so: `/diceroll 50` (this plugin will now generate a random number from 1-50). `match_result` is an array which will contain all the captured variables of the matched plugin's regex.
 
@@ -153,10 +153,10 @@ And this is going to be the result:
 
 Some plugins which use the session buffer are:
 
-* `basic/lyrics.rb` 
-* `basic/randomlogo.rb`
-* `basic/morra.rb`
-* `spioncino/remote.rb`
+* [basic/lyrics.rb](lib/plugins/basic/lyrics.rb)
+* [basic/randomlogo.rb](lib/plugins/basic/randomlogo.rb)
+* [basic/morra.rb](lib/plugins/basic/morra.rb)
+* [spioncino/remote.rb](lib/plugins/spioncino/remote.rb)
 
 ### Startup commands
 
