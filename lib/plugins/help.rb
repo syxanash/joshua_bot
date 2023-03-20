@@ -7,8 +7,7 @@ class Help < AbsPlugin
     bot.api.send_message(chat_id: message.chat.id, text: 'type /help to see commands list')
   end
 
-  def do_stuff(match_results)
-
+  def do_stuff(_match_results)
     text_to_show = "You can give me the following commands:\n\n"
     plugin_classes = AbsPlugin.descendants
 

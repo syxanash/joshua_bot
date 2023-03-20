@@ -16,8 +16,6 @@ class LyricsFinder
   end
 
   def lyrics(track_name, track_artist)
-    lyrics_text = ''
-
     # beautify the song name removing the featuring in order to be easily
     # searchable on genius.com
 
@@ -42,13 +40,14 @@ class LyricsFinder
     # lyrics downloading only the text removing extra tags
 
     html_content = RestClient.get(song_found.url)
-    doc = Nokogiri::HTML::Document.parse(html_content)
 
-    doc.css('.lyrics').each do |n|
-      lyrics_text += n.text.strip
+    doc = Nokogiri::HTML::Document.parse(html_content)
+    div = doc.at_css('div[data-lyrics-container=true]')
+    div.css('br').each do |node|
+      node.replace(Nokogiri::XML::Text.new("\n", div))
     end
 
-    lyrics_text
+    div.text
   end
 end
 
@@ -61,37 +60,29 @@ class Lyrics < AbsPlugin
     bot.api.send_message(chat_id: message.chat.id, text: 'get lyrics from genius.com with /lyrics')
   end
 
+  def examples
+    [
+      { command: '/lyrics', description: 'search for a lyrics of a song' }
+    ]
+  end
+
   def do_stuff(match_results)
     # find our more on how to get a Genius Access Token on: https://genius.com/api-clients
     lyrics_finder = LyricsFinder.new('ENTER YOUR GENIUS Client Access Token HERE!!!')
-    track = {:artist => '', :name => ''}
+    track = { artist: '', name: '' }
 
     kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 
-    reply_keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-      keyboard: [%w[yes no].map{ |item| { text: item } }],
-      one_time_keyboard: true
-    )
-
-    bot.api.send_message(chat_id: message.chat.id, text: '🎵 what\'s the name of the song?')
+    bot.api.send_message(chat_id: message.chat.id, text: 'what\'s the name of the song? 🎵')
     track[:name] = read_buffer
-    bot.api.send_message(chat_id: message.chat.id, text: '🎤 what\'s the name of the artst?')
+    bot.api.send_message(chat_id: message.chat.id, text: 'what\'s the name of the artst? 🎤')
     track[:artist] = read_buffer
-    bot.api.send_message(chat_id: message.chat.id, text: "should I look for the lyrics of the track `#{track[:name]} - #{track[:artist]}`?", parse_mode: 'Markdown', reply_markup: reply_keyboard)
-    confirm_reply = read_buffer
 
-    if confirm_reply == 'yes'
-      begin
-        lyrics = lyrics_finder.lyrics(track[:name], track[:artist])
-        bot.api.send_message(chat_id: message.chat.id, text: lyrics, reply_markup: kb)
-      rescue LyricsNotFound
-        bot.api.send_message(chat_id: message.chat.id, text: 'lyrics not found on genius.com', reply_markup: kb)
-      rescue Genius::AuthenticationError
-        bot.api.send_message(chat_id: message.chat.id, text: 'error occurred while using genius.com API', reply_markup: kb)
-      end
-
-    else
-      bot.api.send_message(chat_id: message.chat.id, text: 'ok retype /lyrics', reply_markup: kb)
-    end
+    lyrics = lyrics_finder.lyrics(track[:name], track[:artist])
+    bot.api.send_message(chat_id: message.chat.id, text: lyrics, reply_markup: kb)
+  rescue LyricsNotFound
+    bot.api.send_message(chat_id: message.chat.id, text: 'lyrics not found on genius.com', reply_markup: kb)
+  rescue Genius::AuthenticationError
+    bot.api.send_message(chat_id: message.chat.id, text: 'error occurred while using genius.com API', reply_markup: kb)
   end
 end

@@ -6,6 +6,12 @@ class Fortune < AbsPlugin
     /^\/fortune$/
   end
 
+  def examples
+    [
+      { command: '/fortune', description: 'get a random fortune cookie' }
+    ]
+  end
+
   def do_stuff(match_results)
     fortune = "🍪📜🍪\n#{`fortune`}"
     bot.api.send_message(chat_id: message.chat.id, text: fortune)

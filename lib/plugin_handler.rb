@@ -22,7 +22,7 @@ class PluginHandler
       Logging.log.info "Created a new buffer file #{user_message.chat.id}"
     end
 
-    Logging.log.info "Now received: #{message_text}, from #{user_message.from.first_name}, in #{user_message.chat.id}"
+    Logging.log.info "Trying to match \"#{message_text}\" with a plugin for #{user_message.from.first_name}, in #{user_message.chat.id}"
 
     AbsPlugin.descendants.each do |lib|
       # for each message create an instance of the plugin library

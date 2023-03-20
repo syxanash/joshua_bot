@@ -38,6 +38,12 @@ class RandomLogo < AbsPlugin
     /^\/randomlogo$/
   end
 
+  def examples
+    [
+      { command: '/randomlogo', description: 'play random logo guess game' }
+    ]
+  end
+
   def do_stuff(_match_results)
     logos = Logos.new(4)
 

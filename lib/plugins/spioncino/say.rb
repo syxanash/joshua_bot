@@ -4,7 +4,7 @@ class Say < AbsPlugin
   end
 
   def show_usage
-    bot.api.send_message(chat_id: message.chat.id, text: "you can let me talk by typing:\n/say *dirty sentence you want me to read*")
+    bot.api.send_message(chat_id: message.chat.id, text: "you can let me talk by typing:\n/say [sentence you'd like me to read]")
   end
 
   def do_stuff(match_results)

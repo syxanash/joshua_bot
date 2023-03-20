@@ -9,6 +9,13 @@ class Xkcd < AbsPlugin
     bot.api.send_message(chat_id: message.chat.id, text: "get xkcd comics with\n/xkcd to get the last comic\n/xkcd *comic number*")
   end
 
+  def examples
+    [
+      { command: '/xkcd', description: 'return a random issue of xkcd web comic' },
+      { command: '/xkcd 6', description: 'return issue number 6 of xkcd comic' }
+    ]
+  end
+
   def do_stuff(match_results)
     number = match_results[1]
 

@@ -19,6 +19,10 @@ class AbsPlugin
     do_stuff(0)
   end
 
+  def examples
+    []
+  end
+
   def command
     # this method when overridden must contain the string or regexp
     # to invoke the plugin command
