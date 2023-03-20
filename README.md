@@ -187,7 +187,7 @@ To enable the bot to use OpenAI, enter your [OpenAI API Token](https://openai.co
 
 <img src="other/doc_assets/screenshot_plugins_conversation.png" alt="screenshot chatgpt" height="400">
 
-*(In this picture the [XKCD comic](lib/plugins/basic/xkcd.rb), the [dice roll](lib/plugins/basic/diceroll.rb) number and [battery status](lib/plugins/basic/battery.rb) were plugins executed by the bot)*
+*(In this picture the [XKCD comic](lib/plugins/basic/xkcd.rb), the [dice roll](lib/plugins/basic/diceroll.rb) number and [battery status](lib/plugins/basic/battery.rb) are plugins executed by the bot)*
 
 In order to let the bot recognize and execute plugins simply by chatting with it, you will need to add the examples when creating new custom plugins. _Examples_ will be used to train the bot to recognize the text based on the description and execute the related command.
 
