@@ -206,7 +206,7 @@ end
 ```
 
 Make sure the command in _examples_ matches the regex in `command` method of your plugin!
-Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [morra.rb](lib/plugins/basic/morra.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb)
+Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute commands: [morra.rb](lib/plugins/basic/morra.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb)
 
 ### Bot Personality
 
