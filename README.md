@@ -182,8 +182,7 @@ By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change 
 
 ## ![new](https://i.imgur.com/UfmDKDV.gif) OpenAI Integration
 
-Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. This feature is **completely optional** and this bot will work even without OpenAI.<br>
-OpenAI APIs can be used to interpret commands of various plugins or to just talk to your bot using ChatGPT.
+Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. This feature is **completely optional** and this bot will work even without OpenAI. OpenAI APIs are used to interpret commands of various plugins or to just talk to your bot using ChatGPT.
 To enable the bot to use OpenAI, enter your [OpenAI API Token](https://openai.com/blog/openai-api) in `config.json`.
 
 ### Interpreting commands
