@@ -16,6 +16,8 @@ class TakeVideo < AbsPlugin
   def do_stuff(_match_results)
     temp_name = "#{Time.now.to_i}_spy_video"
 
+    bot.api.sendChatAction(chat_id: message.chat.id, action: 'upload_video')
+
     system("raspivid -o #{temp_name}.h264 -w 1280 -h 720 -t 10000")
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
