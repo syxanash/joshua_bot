@@ -107,7 +107,7 @@ Which will interpret either `/takephoto` or simply `photo`.
 
 You can display a help message to show the user the correct usage of the plugin. This method will be called when the user invokes the command in a wrong way for example if the command requires additional parameters.
 
-For instance the plugin **NoirSensor** will call the method `show_usage` if the user invokes the command `/noirsensor` without parameters. A correct usage of the plugin NoirSensor would be `/noirsensor on`.
+For instance the plugin [Spione](lib/plugins/spioncino/spione.rb) will call the method `show_usage` if the user invokes the command `/spione` without parameters. A correct usage of the plugin Spione would be `/spione on`.
 
 ### do_stuff
 
