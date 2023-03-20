@@ -183,13 +183,11 @@ By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change 
 
 Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. This feature is **completely optional** and this bot will work even without OpenAI.<br>
 OpenAI APIs can be used to interpret commands of various plugins or to just talk to your bot using ChatGPT.
-To enable the bot to use OpenAI, enter your [API Token](https://openai.com/blog/openai-api) in `config.json`. You can customize different things in `openai` segment, for instance:
+To enable the bot to use OpenAI, enter your [OpenAI API Token](https://openai.com/blog/openai-api) in `config.json`.
 
-* the max number of conversation messages to store in the prompt to give your bot a bit of context when replying to a message
-* the ability to recognize and execute plugins simply by talking to your bot
-* store the generated OpenAI prompts inside the logs
+<img src="other/doc_assets/screenshot_plugins_conversation.png" alt="screenshot chatgpt" height="400">
 
-<img src="other/doc_assets/screenshot_plugins_conversation.png" alt="screenshot chatgpt" height="400" />
+*(In this picture the [XKCD comic](lib/plugins/basic/xkcd.rb), the [dice roll](lib/plugins/basic/diceroll.rb) number and [battery status](lib/plugins/basic/battery.rb) were plugins executed by the bot)*
 
 In order to let the bot recognize and execute plugins simply by chatting with it, you will need to add the examples when creating new custom plugins. _Examples_ will be used to train the bot to recognize the text based on the description and execute the related command.
 
@@ -205,7 +203,13 @@ end
 ```
 
 Make sure the command in _examples_ matches the regex in `command` method of your plugin!
-Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [xkcd.rb](lib/plugins/basic/xkcd.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb) 
+Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [morra.rb](lib/plugins/basic/morra.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb)
+
+You can customize different things in `openai` segment, for instance:
+
+* the max number of conversation messages to store in the prompt to give your bot a bit of context when replying to a message
+* the ability to recognize and execute plugins simply by talking to your bot
+* store the generated OpenAI prompts inside the logs
 
 ## Spioncino
 
