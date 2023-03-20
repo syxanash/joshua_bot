@@ -42,8 +42,9 @@ Here's an example of a `config.json` once you have your API key set up:
   "startup_commands": ["/xkcd"],
   "openai": {
     "token": "",
-    "max_interaction_history": 10,
-    "log_prompts": true
+    "recognize_plugins": true,
+    "max_interaction_history": 5,
+    "log_prompts": false
   }
 }
 ```
