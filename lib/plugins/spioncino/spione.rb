@@ -2,8 +2,8 @@
 # sudo apt-get install libav-tools streamer
 
 class Spione < AbsPlugin
-  MOTIONSENSOR_STATE_FILE = '/tmp/motion_sensor.log'
-  SENSOR_OUTPUT_FILE = '/tmp/sensor_output.txt'
+  MOTIONSENSOR_STATE_FILE = "#{BotConfig.config['temp_directory']}/motion_sensor.log"
+  SENSOR_OUTPUT_FILE = "#{BotConfig.config['temp_directory']}/sensor_output.txt"
 
   def command
     /^\/spione (.+?)$/
@@ -150,18 +150,18 @@ class Spione < AbsPlugin
 
   def take_photo(num = 5)
     num.times do
-      temp_name = 'temp_photo.jpg'
-      system("raspistill -o #{temp_name} -w 2592 -h 1944")
+      photo_file_name = "#{BotConfig.config['temp_directory']}/spy_photo.jpg"
+      system("raspistill -o #{photo_file_name} -w 2592 -h 1944")
 
-      bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(temp_name, 'image/jpeg'))
-      File.delete(temp_name)
+      bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(photo_file_name, 'image/jpeg'))
+      File.delete(photo_file_name)
     end
   end
 
   def take_video(seconds = 10)
     fail Exception, 'must give from 1 to 69 seconds!' if seconds > 60
 
-    temp_name = "#{Time.now.to_i}_spy_video"
+    temp_name = "#{BotConfig.config['temp_directory']}/#{Time.now.to_i}_spy_video"
 
     system("raspivid -o #{temp_name}.h264 -w 1280 -h 720 -t #{seconds}000")
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
