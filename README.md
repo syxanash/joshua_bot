@@ -205,7 +205,7 @@ end
 ```
 
 Make sure the command in _examples_ matches the regex in `command` method of your plugin!
-Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [xkcd.rb](lib/plugins/xkcd.rb), [lyrics.rb](lib/plugins/lyrics.rb), [randomlogo.rb](lib/plugins/randomlogo.rb) 
+Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [xkcd.rb](lib/plugins/basic/xkcd.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb) 
 
 ## Spioncino
 
