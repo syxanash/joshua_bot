@@ -76,6 +76,7 @@ Each plugin is a class which extends the class `AbsPlugin`. A plugin should have
 * `command`
 * `show_usage`
 * `do_stuff`
+* `examples` (see [OpenAI Integration](https://github.com/syxanash/joshua_bot#-openai-integration))
 
 You can place a new plugin in the folder `lib/plugins` or inside a subfolder of this directory to group plugins all your plugins. For example `basic/` and `spioncino/` are two different plugin folders.
 
