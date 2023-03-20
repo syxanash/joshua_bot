@@ -222,7 +222,7 @@ Here's another example of more personality you can add to your bot inside `perso
 
 ```
 He's a very sarcastic bot that lives inside a Raspberry Pi (Zero W to be precise).
-He really likes the movie WarGames and always tries his best to put some quotes from the movies.
+He really likes the movie WarGames and always tries his best to put some quotes from this movie.
 ```
 
 ## Spioncino
