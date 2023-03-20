@@ -18,7 +18,12 @@ token = BotConfig.config['token']
 
 if token.empty?
   Logging.log.error 'Missing Telegram Bot API Token from config.json checkout: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
-  abort '[?] Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
+  abort 'Remember to write your Telegram bot token in config.json\nMore info: https://core.telegram.org/bots#3-how-do-i-create-a-bot'
+end
+
+if !File.exist? BotConfig.config['openai']['personality_file']
+  Logging.log.error 'Missing bot personality file, please take al look at README.md!'
+  abort 'Missing bot personality file, please take al look at README.md!'
 end
 
 plugins_list = Dir[File.dirname(__FILE__) + "/lib/plugins/*.rb"]

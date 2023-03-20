@@ -186,6 +186,8 @@ Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with
 OpenAI APIs can be used to interpret commands of various plugins or to just talk to your bot using ChatGPT.
 To enable the bot to use OpenAI, enter your [OpenAI API Token](https://openai.com/blog/openai-api) in `config.json`.
 
+### Interpreting commands
+
 <img src="other/doc_assets/screenshot_plugins_conversation.png" alt="screenshot chatgpt" height="400">
 
 *(In this picture the [XKCD comic](lib/plugins/basic/xkcd.rb), the [dice roll](lib/plugins/basic/diceroll.rb) number and [battery status](lib/plugins/basic/battery.rb) are plugins executed by the bot)*
@@ -206,11 +208,22 @@ end
 Make sure the command in _examples_ matches the regex in `command` method of your plugin!
 Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute these: [morra.rb](lib/plugins/basic/morra.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb)
 
-You can customize different things in `openai` segment, for instance:
+### Bot Personality
 
-* the max number of conversation messages to store in the prompt to give your bot a bit of context when replying to a message
-* the ability to recognize and execute plugins simply by talking to your bot
-* store the generated OpenAI prompts inside the logs
+The default personality of Joshua is the following:
+
+```
+Joshua is a helpful chatbot who enjoys chatting with any human who interacts with him.
+```
+
+This was hardcoded inside [ai_handler.rb](lib/ai_handler.rb). You can add extra traits to your bot in a personality file, which by default is called `personality.txt`. You can also rename or specify your own file in `config.json`.
+
+Here's another example of more personality you can add to your bot inside `personality.txt`:
+
+```
+He's a very sarcastic bot that lives inside a Raspberry Pi (Zero W to be precise).
+He really likes Star Wars movies and always tries his best to put some quotes from the movies.
+```
 
 ## Spioncino
 

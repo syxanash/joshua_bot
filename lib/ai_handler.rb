@@ -5,6 +5,7 @@ class AiHandler
     return if @api_token.empty?
 
     @recognize_plugins = BotConfig.config['openai']['recognize_plugins']
+    @personality = File.read(BotConfig.config['openai']['personality_file'])
     @previous_interactions = []
     @conversation_history = ''
     @plugin_training_conversation = ''
@@ -117,8 +118,8 @@ Joshua:
 
   def chat_prompt(question)
     generated_prompt = <<~PROMPT
-Joshua is a helpful chatbot that lives inside a Raspberry Pi (Zero W to be precise).
-He's a very sarcastic bot who likes chatting with any human who interacts with him.
+Joshua is a helpful chatbot who enjoys chatting with any human who interacts with him.
+#{@personality}
 
 We start a new conversation with Joshua.
 #{@conversation_history}

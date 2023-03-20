@@ -9,6 +9,7 @@
     "token": "",
     "recognize_plugins": true,
     "max_interaction_history": 5,
+    "personality_file": "personality.txt",
     "log_prompts": false
   }
 }
