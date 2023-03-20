@@ -49,11 +49,11 @@ Here's an example of a `config.json` once you have your API key set up:
 }
 ```
 
-### Plugin Set
+### Plugins
 
-If you take a look at the folder `lib/plugins/` you will find different sub folders containing various plugins inside. By default the plugins loaded on the bot are in `basic/`. Alternatively you can specify a different set in the `config.json` modifying the value `plugin_folder` (e.g. `"spioncino"`) .
+If you take a look at the folder `lib/plugins/` you will find different sub folders containing various plugins inside. By default the plugins loaded on the bot are in `basic/`. Alternatively you can specify a different folder in the `config.json` modifying the value `plugin_folder` (e.g. `"spioncino"`) .
 
-You can create your own set of plugins and drag plugins from other sets by making a new folder in `lib/plugins/`, for instance:
+You can create your own folder of plugins and drag plugins from other folders by making a new folder in `lib/plugins/`, for instance:
 
 ```
 $ mkdir lib/plugins/workinprogress
@@ -77,7 +77,7 @@ Each plugin is a class which extends the class `AbsPlugin`. A plugin should have
 * `show_usage`
 * `do_stuff`
 
-You can place a new plugin in the folder `lib/plugins` or inside a subfolder of this directory to group plugins in sets. For example `basic/` and `spioncino/` are two sets of plugins.
+You can place a new plugin in the folder `lib/plugins` or inside a subfolder of this directory to group plugins all your plugins. For example `basic/` and `spioncino/` are two different plugin folders.
 
 ### initialize
 
