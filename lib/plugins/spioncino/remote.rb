@@ -7,6 +7,12 @@ class Remote < AbsPlugin
     bot.api.send_message(chat_id: message.chat.id, text: 'do some system related things!')
   end
 
+  def examples
+    [
+      { command: '/remote', description: 'execute remote operations on the device where bot is hosted' }
+    ]
+  end
+
   def do_stuff(match_results)
     commands_map = {
       'stop bot' => Proc.new { Kernel.exit },

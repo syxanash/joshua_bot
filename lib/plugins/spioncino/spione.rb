@@ -9,6 +9,13 @@ class Spione < AbsPlugin
     /^\/spione (.+?)$/
   end
 
+  def examples
+    [
+      { command: '/spione on', description: 'turn on motion sensor to start spying the room' },
+      { command: '/spione off', description: 'turn off motion sensor to stop spying the room' }
+    ]
+  end
+
   def show_usage
     system("wget http://i.imgur.com/WFumRlB.png -O scheme.png")
     bot.api.send_message(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /spione *switch value*\nswitch values: on/off/idle/status or status to get the current status")

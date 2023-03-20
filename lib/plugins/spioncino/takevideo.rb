@@ -1,10 +1,16 @@
 class TakeVideo < AbsPlugin
   def command
-    /(^\/takevideo$|video)/
+    /^\/takevideo$/
   end
 
   def show_usage
     bot.api.send_message(chat_id: message.chat.id, text: 'type /takevideo')
+  end
+
+  def examples
+    [
+      { command: '/takevideo', description: 'take a video of the room using the camera' }
+    ]
   end
 
   def do_stuff(_match_results)

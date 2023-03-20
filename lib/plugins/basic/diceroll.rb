@@ -1,10 +1,17 @@
 class DiceRoll < AbsPlugin
   def command
-    /^\/diceroll\s?([1-9]*?)?$/
+    /^\/diceroll\s?(\d*?)?$/
   end
 
   def show_usage
-    bot.api.send_message(chat_id: message.chat.id, text: "you can roll a dice with:\n/diceroll *dice faces (default 6)*")
+    bot.api.send_message(chat_id: message.chat.id, text: "you can roll a dice with:\n/diceroll [number of faces] (default 6)")
+  end
+
+  def examples
+    [
+      { command: '/diceroll',    description: 'return a random number from 1 to 6' },
+      { command: '/diceroll 10', description: 'return a random number from 1 to 10' }
+    ]
   end
 
   def do_stuff(match_results)

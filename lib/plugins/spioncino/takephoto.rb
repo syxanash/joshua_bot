@@ -1,10 +1,16 @@
 class TakePhoto < AbsPlugin
   def command
-    /(^\/takephoto$|photo)/
+    /^\/takephoto$/
   end
 
   def show_usage
     bot.api.send_message(chat_id: message.chat.id, text: 'type /takephoto')
+  end
+
+  def examples
+    [
+      { command: '/takephoto', description: 'take a photo of the room using the camera' }
+    ]
   end
 
   def do_stuff(_match_results)
