@@ -187,6 +187,7 @@ Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with
 To enable the bot to use OpenAI, enter your [OpenAI API Token](https://platform.openai.com/account/api-keys) in `config.json`.
 
 ### Interpreting commands
+This feature is toggled on by default, so whenever you send a message to the bot without directly invoking a command, it will automatically try to interpret it as a command for executing a plugin. 
 
 <img src="other/doc_assets/screenshot_plugins_conversation.png" alt="screenshot chatgpt" height="400">
 
@@ -206,7 +207,8 @@ end
 ```
 
 Make sure the command in _examples_ matches the regex in `command` method of your plugin!
-Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute commands: [morra.rb](lib/plugins/basic/morra.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb)
+Take a look at the demo plugins to have an idea of how to write your own plugin and to make the bot execute commands: [morra.rb](lib/plugins/basic/morra.rb), [lyrics.rb](lib/plugins/basic/lyrics.rb), [randomlogo.rb](lib/plugins/basic/randomlogo.rb)<br>
+If you'd like to talk to the bot only using ChatGPT without any command translation, you can toggle this feature off by setting the flag `recognize_plugins` to `false` in `config.json`.
 
 ### Bot Personality
 
