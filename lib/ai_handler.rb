@@ -85,7 +85,7 @@ class AiHandler
       parameters: {
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'user', content: prompt_message }],
-        temperature: 0
+        temperature: 0.5
       }
     )
 
@@ -97,7 +97,7 @@ class AiHandler
       parameters: {
         model: 'text-davinci-003',
         prompt: prompt_message,
-        temperature: 0.7,
+        temperature: 0,
         max_tokens: 10
       }
     )
