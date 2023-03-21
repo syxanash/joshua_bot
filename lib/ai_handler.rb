@@ -71,6 +71,11 @@ class AiHandler
     @conversation_history = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
   rescue => e
     Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
+    bot.api.send_message(
+      chat_id: user_message.chat.id,
+      text: 'Sorry, feeling a bit dizzy today, could you repeat that again? 😵‍💫',
+      reply_to_message_id: user_message.message_id
+    )
   end
 
   private

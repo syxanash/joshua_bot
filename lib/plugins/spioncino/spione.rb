@@ -4,6 +4,9 @@
 class Spione < AbsPlugin
   MOTIONSENSOR_STATE_FILE = "#{BotConfig.config['temp_directory']}/motion_sensor.log"
   SENSOR_OUTPUT_FILE = "#{BotConfig.config['temp_directory']}/sensor_output.txt"
+  # number of signal to ignore from PIR
+  # before grabbing photos and video
+  SIGNAL_THRESHOLD = 9
 
   def command
     /^\/spione (.+?)$/
@@ -33,10 +36,6 @@ class Spione < AbsPlugin
       off: 'off',
       info: 'status'
     }
-
-    # number of signal to ignore from PIR
-    # before grabbing photos and video
-    max_counter = 8
 
     # check if commands entered is valid
     unless status.value?(switch_value)
@@ -97,7 +96,7 @@ class Spione < AbsPlugin
           counter = 0
         end
 
-        if counter >= max_counter
+        if counter >= SIGNAL_THRESHOLD
 
           tries = 3
 
@@ -153,7 +152,7 @@ class Spione < AbsPlugin
       photo_file_name = "#{BotConfig.config['temp_directory']}/spy_photo.jpg"
       system("raspistill -o #{photo_file_name} -w 2592 -h 1944")
 
-      bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(photo_file_name, 'image/jpeg'))
+      bot.api.sendPhoto(chat_id: message.chat.id, photo: Faraday::UploadIO.new(photo_file_name, 'image/jpeg'), protect_content: true)
       File.delete(photo_file_name)
     end
   end
@@ -166,8 +165,8 @@ class Spione < AbsPlugin
     system("raspivid -o #{temp_name}.h264 -w 1280 -h 720 -t #{seconds}000")
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
-    bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new(temp_name + '.mp4', 'video/mp4'))
+    bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new("#{temp_name}.mp4", 'video/mp4'), protect_content: true)
 
-    File.delete(temp_name + '.h264', temp_name + '.mp4')
+    File.delete("#{temp_name}.h264", "#{temp_name}.mp4")
   end
 end

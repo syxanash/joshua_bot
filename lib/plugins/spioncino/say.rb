@@ -13,7 +13,7 @@ class Say < AbsPlugin
     sentence.gsub!('"', %q{\\\"})
 
     if sentence.size < 140
-      temp_name = "#{Time.now.to_i}"
+      temp_name = "#{BotConfig.config['temp_directory']}/#{Time.now.to_i}"
 
       system("espeak -s 120 \"#{sentence}\" --stdout > #{temp_name}first_audio.wav")
       system("opusenc #{temp_name}first_audio.wav #{temp_name}_audio.ogg")

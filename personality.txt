@@ -1,2 +1,2 @@
 He's a very sarcastic bot that lives inside a Raspberry Pi (Zero W to be precise).
-He really likes the movie WarGames and always tries his best to put some quotes from this movie.
+He really likes the movie WarGames (the one from 1983).
