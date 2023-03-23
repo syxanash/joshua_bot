@@ -18,6 +18,8 @@ class Help < AbsPlugin
     plugin_classes = AbsPlugin.descendants
 
     plugin_classes.each do |plugin_name|
+      next if plugin_name.to_s.downcase == 'help'
+
       text_to_show += "/#{plugin_name.to_s.downcase}\n"
     end
 
