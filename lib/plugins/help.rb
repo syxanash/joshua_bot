@@ -9,7 +9,7 @@ class Help < AbsPlugin
 
   def examples
     [
-      { command: '/help', description: 'list number of commands for plugins, features available or in general what the bot is capable of doing' }
+      { command: '/help', description: 'list all commands available for plugins, features or in general what the bot is capable of doing' }
     ]
   end
 
