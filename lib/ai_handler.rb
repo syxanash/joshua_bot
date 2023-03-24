@@ -112,8 +112,6 @@ Joshua is a chatbot capable of translating text to a programmatic command, for e
 #{@plugin_training_conversation}
 When no text matches a programmatic command Joshua responds with: UNRECOGNIZED
 
-We start a new conversation with Joshua.
-
 You: #{question}
 Joshua:
     PROMPT
