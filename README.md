@@ -237,6 +237,8 @@ He really likes the movie WarGames and always tries his best to put some quotes 
 
 When OpenAI integration is enabled and the user sends a voice message to the bot, this will automatically be transcribed using [Whisper APIs](https://openai.com/blog/introducing-chatgpt-and-whisper-apis). The transcription will then be used for interpreting plugins or communicating with ChatGPT.
 
+<img src="other/doc_assets/screenshot_voice_messages.png" alt="screenshot sending voice messages" height="250">
+
 ## Spioncino
 
 ![ruby lady](other/doc_assets/ruby-lady.png)
