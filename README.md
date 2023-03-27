@@ -233,6 +233,10 @@ He's a very sarcastic bot that lives inside a Raspberry Pi (Zero W to be precise
 He really likes the movie WarGames and always tries his best to put some quotes from this movie.
 ```
 
+### Voice Messages
+
+When OpenAI integration is enabled and the user sends a voice message to the bot, this will automatically be transcribed using [Whisper APIs](https://openai.com/blog/introducing-chatgpt-and-whisper-apis). The transcription will then be used for interpreting plugins or communicating with ChatGPT.
+
 ## Spioncino
 
 ![ruby lady](other/doc_assets/ruby-lady.png)
