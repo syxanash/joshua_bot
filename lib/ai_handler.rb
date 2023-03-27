@@ -49,12 +49,13 @@ class AiHandler
 
       local_audio_file = "#{BotConfig.config['temp_directory']}/msg_audio_#{user_message.voice.file_id}"
 
+      Logging.log.info 'Downloading voice message and converting to mp3...'
       system("wget #{audio_file_url} -O #{local_audio_file}.ogg")
       system("ffmpeg -i #{local_audio_file}.ogg -acodec libmp3lame -aq 4 #{local_audio_file}.mp3")
 
-      Logging.log.info 'Uploading audio file to OpenAI for transcription...'
+      Logging.log.info 'Sending audio file to OpenAI for transcription...'
       transcription = transcribe("#{local_audio_file}.mp3")
-      Logging.log.info "Message transcribed: \"#{transcription}\""
+      Logging.log.info "Message transcribed received: \"#{transcription}\""
 
       File.delete("#{local_audio_file}.ogg")
       File.delete("#{local_audio_file}.mp3")
