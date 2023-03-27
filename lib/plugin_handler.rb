@@ -86,7 +86,7 @@ class PluginHandler
           text: "☢️ #{plugin_name} plugin is not behaving correctly! ☢️"
         )
       rescue CancelOptionException
-        Logging.log.info "Manually stopped executing #{plugin_name}"
+        Logging.log.warn "Manually stopped executing #{plugin_name}"
         bot.api.send_message(
           chat_id: user_message.chat.id,
           text: "⚠️ Stopped executing #{plugin_name} plugin",

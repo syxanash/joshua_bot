@@ -1,3 +1,5 @@
+class EmptyVoiceMessageException < StandardError; end
+
 class AiHandler
   def initialize
     @api_token = BotConfig.config['openai']['token']
@@ -39,6 +41,29 @@ class AiHandler
     prompt_message = ''
     response_text = ''
 
+    # if user sends voice message use whisper to transcribe it
+    # and then use the text for interpreting plugin commands or chatgpt interaction
+    unless user_message.voice.nil?
+      file_url = JSON.parse(RestClient.get("https://api.telegram.org/bot#{BotConfig.config['token']}/getFile?file_id=#{user_message.voice.file_id}"))
+      audio_file_url = "https://api.telegram.org/file/bot#{BotConfig.config['token']}/#{file_url['result']['file_path']}"
+
+      local_audio_file = "#{BotConfig.config['temp_directory']}/msg_audio_#{user_message.voice.file_id}"
+
+      system("wget #{audio_file_url} -O #{local_audio_file}.ogg")
+      system("ffmpeg -i #{local_audio_file}.ogg -acodec libmp3lame -aq 4 #{local_audio_file}.mp3")
+
+      Logging.log.info 'Uploading audio file to OpenAI for transcription...'
+      transcription = transcribe("#{local_audio_file}.mp3")
+      Logging.log.info "Message transcribed: \"#{transcription}\""
+
+      File.delete("#{local_audio_file}.ogg")
+      File.delete("#{local_audio_file}.mp3")
+
+      raise EmptyVoiceMessageException if transcription.empty?
+
+      message_text = transcription
+    end
+
     if @recognize_plugins
       prompt_message = plugin_prompt(message_text)
 
@@ -69,6 +94,13 @@ class AiHandler
     @previous_interactions.shift if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
 
     @conversation_history = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
+  rescue EmptyVoiceMessageException
+    Logging.log.error 'Received empty transcription from OpenAI!'
+    bot.api.send_message(
+      chat_id: user_message.chat.id,
+      text: 'Sorry, not sure I caught that, could you repeat it again? ',
+      reply_to_message_id: user_message.message_id
+    )
   rescue => e
     Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
     bot.api.send_message(
@@ -79,6 +111,17 @@ class AiHandler
   end
 
   private
+
+  def transcribe(file_audio_path)
+    response = @client.transcribe(
+      parameters: {
+        model: 'whisper-1',
+        file: File.open(file_audio_path, 'rb')
+      }
+    )
+
+    response.parsed_response['text']
+  end
 
   def send_chat_prompt(prompt_message)
     response = @client.chat(

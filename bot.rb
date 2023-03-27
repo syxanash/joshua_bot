@@ -60,7 +60,7 @@ begin
           message_handler.handle(bot, user_message)
         end
       else
-        Logging.log.info 'Type not yet implemented'
+        Logging.log.warn 'Type not yet implemented'
       end
     end
   end

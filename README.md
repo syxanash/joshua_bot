@@ -6,6 +6,12 @@ A *plugins* based bot for [Telegram](https://telegram.org/) messaging app writte
 
 ## Installation
 
+Install required dependencies:
+
+```
+$ sudo apt-get install ffmpeg wget
+```
+
 Clone this repository and then run `bundle` to install the dependencies.
 
 ```
