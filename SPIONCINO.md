@@ -95,6 +95,6 @@ Then you can either connect the Raspberry Pi Camera Module or a normal Webcam vi
 Unfortunately for how much I love writing code for this little project I wouldn't rely on such a simple surveillance system for my house :)
 
 This project was originally created to experiment with Arduino _Firmata_, learn multithreading in Ruby and after a few years it was ported to Raspberry Pi.
-The Arduino version which is no longer supported lies dead in `lib/plugins/unsupported/motionsensor.rb`, [this](other/doc_assets/arduino.png) was the old schematics of the project. I even made a demonstration [video](https://www.youtube.com/watch?v=irJc_imOiuo) in my college dorm room.
+The Arduino version which is no longer supported lies dead in `lib/plugins/legacy/motionsensor.rb`, [this](other/doc_assets/arduino.png) was the old schematics of the project. I even made a demonstration [video](https://www.youtube.com/watch?v=irJc_imOiuo) in my college dorm room.
 
 Feel free to send some PR for bug fixing or new features!
