@@ -38,7 +38,6 @@ class AiHandler
     return if @api_token.empty?
 
     matched_plugin = false
-    prompt_message = ''
     response_text = ''
 
     # if user sends voice message use whisper to transcribe it
