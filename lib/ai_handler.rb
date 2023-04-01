@@ -57,8 +57,7 @@ class AiHandler
       transcription = transcribe("#{local_audio_file}.mp3")
       Logging.log.info "Message transcribed received: \"#{transcription}\""
 
-      File.delete("#{local_audio_file}.ogg")
-      File.delete("#{local_audio_file}.mp3")
+      File.delete("#{local_audio_file}.ogg", "#{local_audio_file}.mp3")
 
       raise EmptyVoiceMessageException if transcription.empty?
 
