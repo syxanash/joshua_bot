@@ -4,9 +4,20 @@
 class Spione < AbsPlugin
   MOTIONSENSOR_STATE_FILE = "#{BotConfig.config['temp_directory']}/motion_sensor.log"
   SENSOR_OUTPUT_FILE = "#{BotConfig.config['temp_directory']}/sensor_output.txt"
+  THRESHOLD_FILE = "#{BotConfig.config['temp_directory']}/threshold_sensitivity.txt"
+
   # number of signal to ignore from PIR
   # before grabbing photos and video
-  SIGNAL_THRESHOLD = 9
+  DEFAULT_SIGNAL_THRESHOLD = 7
+
+  def initialize
+    if File.exist? THRESHOLD_FILE
+      @signal_threshold = File.read(THRESHOLD_FILE).to_i
+    else
+      File.write(THRESHOLD_FILE, DEFAULT_SIGNAL_THRESHOLD)
+      @signal_threshold = DEFAULT_SIGNAL_THRESHOLD
+    end
+  end
 
   def command
     /^\/spione (.+?)$/
@@ -23,11 +34,12 @@ class Spione < AbsPlugin
     system("wget http://i.imgur.com/WFumRlB.png -O scheme.png")
     bot.api.send_message(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /spione *switch value*\nswitch values: on/off/idle/status or status to get the current status")
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new('scheme.png', 'image/png'))
+    bot.api.send_message(chat_id: message.chat.id, text: 'To change Motion Sensor sensitivity: /spione inc or dec')
     File.delete('scheme.png')
   end
 
   def do_stuff(match_results)
-    switch_value = match_results[1]
+    argv_parameter = match_results[1]
 
     # available commands for this plugin
     status = {
@@ -37,21 +49,45 @@ class Spione < AbsPlugin
       info: 'status'
     }
 
+    # check if argv is for decreasing or increasing sensitivity of motion sensor
+    case argv_parameter
+    when 'inc'
+      @signal_threshold += 1
+      File.write(THRESHOLD_FILE, @signal_threshold)
+      bot.api.send_message(
+        chat_id: message.chat.id,
+        text: "Motion Sensor sensitivity increased to #{@signal_threshold}"
+      )
+      return 0
+    when 'dec'
+      @signal_threshold -= 1
+      File.write(THRESHOLD_FILE, @signal_threshold)
+      bot.api.send_message(
+        chat_id: message.chat.id,
+        text: "Motion Sensor sensitivity decreased to #{@signal_threshold}"
+      )
+      return 0
+    end
+
     # check if commands entered is valid
-    unless status.value?(switch_value)
-      bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize command #{switch_value} for Motion Sensor plugin!")
+    unless status.value?(argv_parameter)
+      bot.api.send_message(chat_id: message.chat.id, text: "Can't recognize command #{argv_parameter} for Motion Sensor plugin!")
       return 0 # quit current plugin session
     end
 
     # check if user wants to get the status of the plugin
-    if switch_value == status[:info]
+    if argv_parameter == status[:info]
       current_status = status[:off]
 
       if File.exist? MOTIONSENSOR_STATE_FILE
         current_status = File.read(MOTIONSENSOR_STATE_FILE)
       end
 
-      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor plugin currently #{current_status}!")
+      bot.api.send_message(
+        chat_id: message.chat.id,
+        text: "Motion Sensor plugin currently: #{current_status}\nSensitivity set to: #{@signal_threshold}"
+      )
+
       return 0
     end
 
@@ -59,13 +95,13 @@ class Spione < AbsPlugin
     # in this case we only change the value of the plugin to on/idle/off
     # otherwise we write a log file for the first time
     if File.exist? MOTIONSENSOR_STATE_FILE
-      File.write(MOTIONSENSOR_STATE_FILE, switch_value)
-      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor mode changed to #{switch_value}")
+      File.write(MOTIONSENSOR_STATE_FILE, argv_parameter)
+      bot.api.send_message(chat_id: message.chat.id, text: "Motion Sensor mode changed to #{argv_parameter}")
 
       return 0 # quit the current plugin call
     else
       # writing the switch value for the first time after creating the file
-      File.write(MOTIONSENSOR_STATE_FILE, switch_value)
+      File.write(MOTIONSENSOR_STATE_FILE, argv_parameter)
     end
 
     unless File.exist? SENSOR_OUTPUT_FILE
@@ -74,7 +110,7 @@ class Spione < AbsPlugin
     end
 
     # get the initial value for the plugin process
-    plugin_process = switch_value
+    plugin_process = argv_parameter
 
     # put in a separate thread the python script which checks the PIR sensor
     Thread.new {
@@ -96,13 +132,14 @@ class Spione < AbsPlugin
           counter = 0
         end
 
-        if counter >= SIGNAL_THRESHOLD
+        if counter >= @signal_threshold
 
           tries = 3
 
           begin
             take_video(5)
             take_video(5)
+            take_video(4)
             take_video()
           rescue
             if (tries -= 1) >= 0
