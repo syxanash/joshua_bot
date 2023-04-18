@@ -29,7 +29,7 @@ GEM
     faraday-multipart (1.0.4)
       multipart-post (~> 2)
     faraday-net_http (3.0.2)
-    fileutils (1.7.0)
+    fileutils (1.7.1)
     genius (0.1.2)
       httparty (~> 0.21.0)
     http-accept (1.7.0)
@@ -46,7 +46,7 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.3.0)
     netrc (0.11.0)
-    nokogiri (1.14.2-arm64-darwin)
+    nokogiri (1.14.3-arm64-darwin)
       racc (~> 1.4)
     racc (1.6.2)
     rest-client (2.1.0)
@@ -84,4 +84,4 @@ RUBY VERSION
    ruby 3.2.1p31
 
 BUNDLED WITH
-   2.4.8
+   2.4.9
