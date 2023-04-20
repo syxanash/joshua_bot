@@ -31,7 +31,7 @@ class Spione < AbsPlugin
   end
 
   def show_usage
-    system("wget http://i.imgur.com/WFumRlB.png -O scheme.png")
+    system("wget https://i.imgur.com/60mdxrh.png -O scheme.png")
     bot.api.send_message(chat_id: message.chat.id, text: "This plugin will work on a Raspberry Pi 🍓\n\ntype /spione *switch value*\nswitch values: on/off/idle/status or status to get the current status")
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new('scheme.png', 'image/png'))
     bot.api.send_message(chat_id: message.chat.id, text: 'To change Motion Sensor sensitivity: /spione inc or dec')

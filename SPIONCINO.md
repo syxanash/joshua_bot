@@ -2,7 +2,7 @@
 
 An extremely simple surveillance bot running on a **Raspberry Pi** 🍓
 
-<img src='https://i.imgur.com/RwNAY0i.jpg' height='250' />&nbsp;<img src='https://i.imgur.com/rMtcXqv.jpg' height='250' />
+<img src='https://i.imgur.com/fgS5cGq.jpg' height='250' />&nbsp;<img src='https://i.imgur.com/lkD8K3s.jpg' height='250' />
 
 ## Description
 
