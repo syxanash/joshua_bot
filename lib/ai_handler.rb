@@ -125,7 +125,7 @@ class AiHandler
   def send_chat_prompt(prompt_message)
     response = @client.chat(
       parameters: {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [{ role: 'user', content: prompt_message }],
         temperature: 0.5
       }
