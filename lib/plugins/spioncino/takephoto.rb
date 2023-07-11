@@ -18,7 +18,7 @@ class TakePhoto < AbsPlugin
 
     picture_file_name = "#{BotConfig.config['temp_directory']}/temp_photo.jpg"
 
-    system("raspistill -o #{picture_file_name} -w 2592 -h 1944")
+    system("libcamera-jpeg -o #{picture_file_name} --width 2592 --height 1944")
     bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new(picture_file_name, 'image/jpeg'), protect_content: true)
 
     File.delete picture_file_name

@@ -18,7 +18,7 @@ class TakeVideo < AbsPlugin
 
     bot.api.sendChatAction(chat_id: message.chat.id, action: 'upload_video')
 
-    system("raspivid -o #{temp_name}.h264 -w 1280 -h 720 -t 10000")
+    system("libcamera-vid -o #{temp_name}.h264 --width 1280 --height 720 -t 10000")
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
     bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new("#{temp_name}.mp4", 'video/mp4'), protect_content: true)
