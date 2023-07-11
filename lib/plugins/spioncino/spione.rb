@@ -199,7 +199,7 @@ class Spione < AbsPlugin
 
     temp_name = "#{BotConfig.config['temp_directory']}/#{Time.now.to_i}_spy_video"
 
-    system("libcamera-vid -o #{temp_name}.h264 --width 1280 --height 720 -t #{seconds}000")
+    system("libcamera-vid -o #{temp_name}.h264 --width 640 --height 480 --mode 1640:1232 -t #{seconds}000")
     system("MP4Box -add #{temp_name}.h264 #{temp_name}.mp4")
 
     bot.api.sendVideo(chat_id: message.chat.id, video: Faraday::UploadIO.new("#{temp_name}.mp4", 'video/mp4'), protect_content: true)
