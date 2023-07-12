@@ -119,7 +119,7 @@ class AiHandler
       }
     )
 
-    response.parsed_response['text']
+    response['text']
   end
 
   def send_chat_prompt(prompt_message)
