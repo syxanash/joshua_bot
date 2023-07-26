@@ -38,6 +38,10 @@ At this point no more changes are required and you can run the bot with:
 $ ruby bot.rb
 ```
 
+### PIR Sensor
+
+You can change the sensitivity of the PIR sensor by modifying the config property `spioncino/pir_sensor_threshold` inside `config.json`. By default it will be set to value `8`, lower the number the more sensitive is the PIR so it will detect movements more frequently.
+
 ## Usage
 
 Once everything is connected and the bot has been started, using the command `ruby bot.rb`, you should be able to talk to your bot. You could send some simple commands to verify it's up and running with `/ping`, the bot will reply with `pong`.

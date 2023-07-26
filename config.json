@@ -5,6 +5,9 @@
   "plugin_folder": "basic",
   "password": "",
   "startup_commands": [],
+  "spioncino": {
+    "pir_sensor_threshold": 8
+  },
   "openai": {
     "token": "",
     "recognize_plugins": true,

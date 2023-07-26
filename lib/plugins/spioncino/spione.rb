@@ -8,7 +8,7 @@ class Spione < AbsPlugin
 
   # number of signal to ignore from PIR
   # before grabbing photos and video
-  DEFAULT_SIGNAL_THRESHOLD = 7
+  DEFAULT_SIGNAL_THRESHOLD = BotConfig.config['spioncino']['pir_sensor_threshold']
 
   def initialize
     if File.exist? THRESHOLD_FILE
