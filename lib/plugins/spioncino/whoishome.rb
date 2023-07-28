@@ -3,6 +3,12 @@ class WhoIsHome < AbsPlugin
     /^\/whoishome$/
   end
 
+  def examples
+    [
+      { command: '/whoishome', description: 'check who is currently at home by scanning the wifi network' }
+    ]
+  end
+
   def show_usage
     bot.api.send_message(chat_id: message.chat.id, text: 'type /whoishome')
   end
