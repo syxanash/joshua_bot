@@ -187,7 +187,7 @@ In order to stop a bot from asking further inputs and replies from a user, perha
 
 By default, a log file will be created in `/tmp/joshua_bot_tmp` (you can change this by editing the `temp_directory` name in `config.json`). Alternatively, if you'd like to redirect all output to STDOUT while testing your bot, simply change the variable `prod` to `false` in `config.json`.
 
-## ![new](https://i.imgur.com/BS6dn9V.gif) OpenAI Integration
+## OpenAI Integration
 
 Thanks to the [OpenAI APIs](https://platform.openai.com/docs), you can chat with Joshua Bot using ChatGPT. This feature is **completely optional** and this bot will work even without OpenAI. OpenAI APIs are used to interpret commands of various plugins or to just talk to your bot using ChatGPT.
 To enable the bot to use OpenAI, enter your [OpenAI API Token](https://platform.openai.com/account/api-keys) in `config.json`.
