@@ -11,6 +11,9 @@ class AiHandler
     @previous_interactions = []
     @conversation_history = ''
     @plugin_training_conversation = ''
+    @plugins_list_prompt_segment = ''
+
+    all_plugins_commands = []
 
     Logging.log.info 'Initialized OpenAI client'
     @client = OpenAI::Client.new(access_token: @api_token)
@@ -28,9 +31,12 @@ class AiHandler
         end
 
         if !examples_list.empty? && examples_match_commands
+          all_plugins_commands.push(examples_list[0][:command])
           @plugin_training_conversation += examples_list.map { |item| "You: #{item[:description]}\nJoshua: #{item[:command]}\n" }.join
         end
       end
+
+      @plugins_list_prompt_segment = "Joshua can only execute the following commands: #{all_plugins_commands.join(' ')}"
     end
   end
 
@@ -112,7 +118,7 @@ class AiHandler
   private
 
   def transcribe(file_audio_path)
-    response = @client.transcribe(
+    response = @client.audio.transcribe(
       parameters: {
         model: 'whisper-1',
         file: File.open(file_audio_path, 'rb')
@@ -166,8 +172,7 @@ Joshua:
   def chat_prompt(question)
     generated_prompt = <<~PROMPT
 Joshua is a helpful chatbot who enjoys chatting with any human who interacts with him.
-#{@personality}
-
+#{@personality}#{@plugins_list_prompt_segment.empty? ? '' : "\n#{@plugins_list_prompt_segment}\n"}
 We start a new conversation with Joshua.
 #{@conversation_history}
 You: #{question}
