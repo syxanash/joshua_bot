@@ -50,12 +50,11 @@ begin
   Telegram::Bot::Client.run(token) do |bot|
     Logging.log.info 'Bot started'
 
-    # searching for new messages
     bot.listen do |user_message|
       case user_message
       when Telegram::Bot::Types::Message
         # open a thread for every new message to answer users
-        # independently from each command.
+        # independently for each command.
         Thread.new do
           message_handler.handle(bot, user_message)
         end

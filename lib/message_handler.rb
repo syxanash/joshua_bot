@@ -5,6 +5,7 @@ class MessageHandler
     @password_enabled = !@bot_password.empty?
     @chat_id_authenticated = {}
     @users_authenticated = []
+    @ssh_connections = ssh_hosts
   end
 
   def handle(bot, user_message)
@@ -34,6 +35,8 @@ class MessageHandler
             chat_id: user_message.chat.id,
             text: ">#{"\n" * 40}Shall we play a game?"
           )
+
+          ssh_monitoring(user_message)
 
           # execute startup commands only after user has successfully logged in
           # the original message object will be cloned and for each command
@@ -68,6 +71,30 @@ class MessageHandler
 
   private
 
+  def ssh_monitoring(user_message)
+    Thread.new do
+      new_ssh_connections = ssh_hosts
+      Logging.log.info "SSH hosts connected: #{new_ssh_connections}"
+
+      loop do
+        new_ssh_connections = ssh_hosts
+        if new_ssh_connections.size > @ssh_connections.size
+          @bot.api.send_message(
+            chat_id: user_message.chat.id,
+            text: "Hey I detected a new SSH host connection, was it you?\n#{(new_ssh_connections - @ssh_connections).join("\n")}"
+          )
+        end
+
+        @ssh_connections = new_ssh_connections
+        sleep 5
+      end
+    end
+  end
+
+  def ssh_hosts
+    `netstat | grep ssh | awk '{print $5}'`.split("\n").map { |host| host.split(':')[0] }
+  end
+
   def check_simple_commands(user_message, message_text)
     bot_username = @bot.api.getMe['result']['username']
 
@@ -90,6 +117,11 @@ class MessageHandler
       USERS_AUTH
 
       @bot.api.send_message(chat_id: user_message.chat.id, text: text_value)
+    when '/ssh', "/ssh@#{bot_username}"
+      @bot.api.send_message(
+        chat_id: user_message.chat.id,
+        text: "Current SSH hosts connected: #{@ssh_connections.join("\n")}"
+      )
     when '/ping', "/ping@#{bot_username}"
       @bot.api.send_message(chat_id: user_message.chat.id, text: 'pong')
     when '/about', "/about@#{bot_username}"
