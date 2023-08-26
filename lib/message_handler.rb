@@ -120,7 +120,7 @@ class MessageHandler
     when '/ssh', "/ssh@#{bot_username}"
       @bot.api.send_message(
         chat_id: user_message.chat.id,
-        text: "Current SSH hosts connected: #{@ssh_connections.join("\n")}"
+        text: "Current SSH hosts connected: #{@ssh_connections.empty? ? 'none' : @ssh_connections.join("\n")}"
       )
     when '/ping', "/ping@#{bot_username}"
       @bot.api.send_message(chat_id: user_message.chat.id, text: 'pong')

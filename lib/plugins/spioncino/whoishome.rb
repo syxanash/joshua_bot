@@ -79,7 +79,7 @@ class WhoIsHome < AbsPlugin
           should_display = stored_device['display']
 
           if should_display
-            output_message += "✅ #{stored_device['name']} is online\n"
+            output_message += "🛜 #{stored_device['name']} is online: #{device[1]}\t#{device[2]}\n"
           end
         end
       end
