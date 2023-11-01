@@ -92,7 +92,12 @@ class AiHandler
       bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
 
       response_text = send_chat_prompt(prompt_message)
-      bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
+
+      nested_matched_plugin = PluginHandler.handle(bot, user_message, response_text)
+
+      if !nested_matched_plugin
+        bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
+      end
     end
 
     @previous_interactions.push({ question: message_text, answer: response_text })
