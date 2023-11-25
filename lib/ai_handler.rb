@@ -10,10 +10,15 @@ class AiHandler
     @personality = File.read(BotConfig.config['openai']['personality_file'])
     @previous_interactions = []
     @conversation_history = ''
-    @plugin_training_conversation = ''
     @plugins_list_prompt_segment = ''
+    @text_to_command_training = [
+      {
+        role: 'system',
+        content: 'You are a text to command converter, you will only reply with commands given a text by a user and nothing else. I will give you some examples of commands and when a command is not found in these examples, you must reply with UNRECOGNIZED.',
+      }
+    ]
 
-    all_plugins_commands = []
+    first_example_plugin_commands = []
 
     Logging.log.info 'Initialized OpenAI client'
     @client = OpenAI::Client.new(access_token: @api_token)
@@ -31,12 +36,18 @@ class AiHandler
         end
 
         if !examples_list.empty? && examples_match_commands
-          all_plugins_commands.push(examples_list[0][:command])
-          @plugin_training_conversation += examples_list.map { |item| "You: #{item[:description]}\nJoshua: #{item[:command]}\n" }.join
+          first_example_plugin_commands.push(examples_list[0][:command])
+
+          @text_to_command_training += examples_list.map do |item|
+            [
+              { role: 'user', content: item[:description] },
+              { role: 'assistant', content: item[:command] }
+            ]
+          end.flatten
         end
       end
 
-      @plugins_list_prompt_segment = "Joshua can only execute the following commands: #{all_plugins_commands.join(' ')}"
+      @plugins_list_prompt_segment = "Joshua can only execute the following commands: #{first_example_plugin_commands.join(' ')}"
     end
   end
 
@@ -70,14 +81,20 @@ class AiHandler
     end
 
     if @recognize_plugins
-      prompt_message = plugin_prompt(message_text)
+      user_command_request = @text_to_command_training.clone
+      user_command_request.push(
+        {
+          role: 'user',
+          content: message_text
+        }
+      )
 
       Logging.log.info 'Sending plugin prompt to OpenAI...'
-      Logging.log.info "Plugin prompt sent:\n#{prompt_message}" if BotConfig.config['openai']['log_prompts']
+      Logging.log.info "Plugin training sent:\n#{user_command_request}" if BotConfig.config['openai']['log_prompts']
 
       bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
 
-      response_text = send_completions_prompt(prompt_message)
+      response_text = send_interpret_command(user_command_request)
       Logging.log.info "Command received from OpenAI: \"#{response_text}\""
 
       matched_plugin = PluginHandler.handle(bot, user_message, response_text)
@@ -93,7 +110,7 @@ class AiHandler
 
       response_text = send_chat_prompt(prompt_message)
 
-      nested_matched_plugin = PluginHandler.handle(bot, user_message, response_text)
+      nested_matched_plugin = PluginHandler.handle(bot, user_message, response_text, false)
 
       if !nested_matched_plugin
         bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
@@ -145,33 +162,16 @@ class AiHandler
     response.dig('choices', 0, 'message', 'content')
   end
 
-  def send_completions_prompt(prompt_message)
-    response = @client.completions(
+  def send_interpret_command(user_command_request)
+    response = @client.chat(
       parameters: {
-        model: 'text-davinci-003',
-        prompt: prompt_message,
-        temperature: 0,
-        max_tokens: 10
+        model: 'gpt-4',
+        messages: user_command_request,
+        temperature: 0
       }
     )
 
-    response['choices'].map { |c| c['text'] }.join.lstrip
-  end
-
-  def plugin_prompt(question)
-    generated_prompt = <<~PROMPT
-Joshua is a chatbot capable of translating text to a programmatic command, for example:
-
-#{@plugin_training_conversation}
-When no text matches a programmatic command Joshua responds with: UNRECOGNIZED
-
-We start a new conversation with Joshua.
-
-You: #{question}
-Joshua:
-    PROMPT
-
-    generated_prompt.chomp
+    response.dig('choices', 0, 'message', 'content')
   end
 
   def chat_prompt(question)

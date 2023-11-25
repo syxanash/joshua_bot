@@ -57,7 +57,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    ruby-openai (5.2.0)
+    ruby-openai (6.2.0)
       event_stream_parser (>= 0.3.0, < 1.0.0)
       faraday (>= 1)
       faraday-multipart (>= 1)
@@ -81,7 +81,7 @@ DEPENDENCIES
   genius
   nokogiri
   rest-client
-  ruby-openai (~> 5.2.0)
+  ruby-openai (~> 6.2.0)
   similar_text
   telegram-bot-ruby
 
