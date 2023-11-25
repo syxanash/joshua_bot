@@ -1,5 +1,5 @@
 class PluginHandler
-  def self.handle(bot, user_message, message_text, show_help: false)
+  def self.handle(bot, user_message, message_text, show_help = true)
     bot_username = bot.api.getMe['result']['username']
     plugin_triggered = false
 
