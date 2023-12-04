@@ -17,13 +17,6 @@ class AiHandler
       }
     ]
 
-    @chat_header = [
-      {
-        role: 'system',
-        content: chat_prompt
-      }
-    ]
-
     first_example_plugin_commands = []
 
     Logging.log.info 'Initialized OpenAI client'
@@ -53,7 +46,7 @@ class AiHandler
         end
       end
 
-      @plugins_list_prompt_segment = "Joshua can only execute the following commands: #{first_example_plugin_commands.join(' ')}"
+      @plugins_list_prompt_segment = "Joshua can also reply just with the following commands: #{first_example_plugin_commands.join(' ')}"
     end
   end
 
@@ -61,6 +54,7 @@ class AiHandler
     return if @api_token.empty?
 
     matched_plugin = false
+    nested_matched_plugin = false
     response_text = ''
 
     # if user sends voice message use whisper to transcribe it
@@ -114,7 +108,13 @@ class AiHandler
     end
 
     if !matched_plugin || !@recognize_plugins
-      combined_conversation = @chat_header + @chat_history
+      chat_header = [
+        {
+          role: 'system',
+          content: prompt_header_setup
+        }
+      ]
+      combined_conversation = chat_header + @chat_history
 
       Logging.log.info 'Sending chat conversation to OpenAI...'
       Logging.log.info "Chat prompt sent:\n#{combined_conversation}" if BotConfig.config['openai']['log_prompts']
@@ -123,7 +123,10 @@ class AiHandler
 
       response_text = send_chat_prompt(combined_conversation)
 
-      nested_matched_plugin = PluginHandler.handle(bot, user_message, response_text, false)
+      if response_text.match?(%r{.*?(\/.*?)$})
+        possible_command = response_text.match(%r{.*?(\/.*?)$})
+        nested_matched_plugin = PluginHandler.handle(bot, user_message, possible_command[1], false)
+      end
 
       if !nested_matched_plugin
         bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
@@ -193,7 +196,7 @@ class AiHandler
     response.dig('choices', 0, 'message', 'content')
   end
 
-  def chat_prompt
+  def prompt_header_setup
     generated_prompt = <<~PROMPT
 You are Joshua a helpful chatbot who enjoys chatting with any human who interacts with him.
 #{@personality}#{@plugins_list_prompt_segment.empty? ? '' : "\n#{@plugins_list_prompt_segment}\n"}
