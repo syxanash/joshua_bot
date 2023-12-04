@@ -8,13 +8,19 @@ class AiHandler
 
     @recognize_plugins = BotConfig.config['openai']['recognize_plugins']
     @personality = File.read(BotConfig.config['openai']['personality_file'])
-    @previous_interactions = []
-    @conversation_history = ''
     @plugins_list_prompt_segment = ''
+    @chat_history = []
     @text_to_command_training = [
       {
         role: 'system',
         content: 'You are a text to command converter, you will only reply with commands given a text by a user and nothing else. I will give you some examples of commands and when a command is not found in these examples, you must reply with UNRECOGNIZED.',
+      }
+    ]
+
+    @chat_header = [
+      {
+        role: 'system',
+        content: chat_prompt
       }
     ]
 
@@ -80,6 +86,13 @@ class AiHandler
       message_text = transcription
     end
 
+    @chat_history.push(
+      {
+        role: 'user',
+        content: message_text
+      }
+    )
+
     if @recognize_plugins
       user_command_request = @text_to_command_training.clone
       user_command_request.push(
@@ -97,18 +110,18 @@ class AiHandler
       response_text = send_interpret_command(user_command_request)
       Logging.log.info "Command received from OpenAI: \"#{response_text}\""
 
-      matched_plugin = PluginHandler.handle(bot, user_message, response_text)
+      matched_plugin = PluginHandler.handle(bot, user_message, response_text, false)
     end
 
     if !matched_plugin || !@recognize_plugins
-      prompt_message = chat_prompt(message_text)
+      combined_conversation = @chat_header + @chat_history
 
       Logging.log.info 'Sending chat conversation to OpenAI...'
-      Logging.log.info "Chat prompt sent:\n#{prompt_message}" if BotConfig.config['openai']['log_prompts']
+      Logging.log.info "Chat prompt sent:\n#{combined_conversation}" if BotConfig.config['openai']['log_prompts']
 
       bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
 
-      response_text = send_chat_prompt(prompt_message)
+      response_text = send_chat_prompt(combined_conversation)
 
       nested_matched_plugin = PluginHandler.handle(bot, user_message, response_text, false)
 
@@ -117,10 +130,16 @@ class AiHandler
       end
     end
 
-    @previous_interactions.push({ question: message_text, answer: response_text })
-    @previous_interactions.shift if @previous_interactions.size >= BotConfig.config['openai']['max_interaction_history']
+    @chat_history.push(
+      {
+        role: 'assistant',
+        content: response_text
+      }
+    )
 
-    @conversation_history = @previous_interactions.map { |item| "You: #{item[:question]}\nJoshua: #{item[:answer]}" }.join("\n")
+    # the number two represents an question by user + answer by chatgpt
+    # thus we remove one object for role user and another for role assistant
+    2.times { @chat_history.shift } if (@chat_history.size / 2) > BotConfig.config['openai']['max_interaction_history']
   rescue EmptyVoiceMessageException
     Logging.log.error 'Received empty transcription from OpenAI!'
     bot.api.send_message(
@@ -129,7 +148,7 @@ class AiHandler
       reply_to_message_id: user_message.message_id
     )
   rescue => e
-    Logging.log.error "Something went wrong with OpenAI request:\n#{e.message}"
+    Logging.log.error "Something went horribly wrong:\n#{e.message}\n#{e.backtrace.join("\n")}"
     bot.api.send_message(
       chat_id: user_message.chat.id,
       text: 'Sorry, feeling a bit dizzy today, could you repeat that again? 😵‍💫',
@@ -150,11 +169,11 @@ class AiHandler
     response['text']
   end
 
-  def send_chat_prompt(prompt_message)
+  def send_chat_prompt(conversation)
     response = @client.chat(
       parameters: {
         model: 'gpt-4',
-        messages: [{ role: 'user', content: prompt_message }],
+        messages: conversation,
         temperature: 0.5
       }
     )
@@ -174,15 +193,11 @@ class AiHandler
     response.dig('choices', 0, 'message', 'content')
   end
 
-  def chat_prompt(question)
+  def chat_prompt
     generated_prompt = <<~PROMPT
-Joshua is a helpful chatbot who enjoys chatting with any human who interacts with him.
+You are Joshua a helpful chatbot who enjoys chatting with any human who interacts with him.
 #{@personality}#{@plugins_list_prompt_segment.empty? ? '' : "\n#{@plugins_list_prompt_segment}\n"}
-We start a new conversation with Joshua.
-#{@conversation_history}
-You: #{question}
-Joshua:
-    PROMPT
+PROMPT
 
     generated_prompt.chomp
   end
