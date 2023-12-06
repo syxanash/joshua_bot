@@ -1,5 +1,5 @@
 class PluginHandler
-  def self.handle(bot, user_message, message_text)
+  def self.handle(bot, user_message, message_text, show_help = true)
     bot_username = bot.api.getMe['result']['username']
     plugin_triggered = false
 
@@ -73,7 +73,7 @@ class PluginHandler
 
             # if the plugin main regexp doesn't match the message
             # then show the plugin usage example
-          elsif %r{\/#{plugin_name.downcase}?} =~ unmentioned_text
+          elsif show_help && %r{\/#{plugin_name.downcase}?} =~ unmentioned_text
             plugin_triggered = true
 
             plugin.show_usage

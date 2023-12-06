@@ -1,10 +1,9 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    base64 (0.1.1)
+    base64 (0.2.0)
     concurrent-ruby (1.2.2)
-    domain_name (0.5.20190701)
-      unf (>= 0.0.5, < 1.0.0)
+    domain_name (0.6.20231109)
     dry-core (1.0.1)
       concurrent-ruby (~> 1.0)
       zeitwerk (~> 2.6)
@@ -24,15 +23,15 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    event_stream_parser (0.3.0)
-    faraday (2.7.11)
+    event_stream_parser (1.0.0)
+    faraday (2.7.12)
       base64
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-multipart (1.0.4)
       multipart-post (~> 2)
     faraday-net_http (3.0.2)
-    fileutils (1.7.1)
+    fileutils (1.7.2)
     genius (0.1.2)
       httparty (~> 0.21.0)
     http-accept (1.7.0)
@@ -49,16 +48,16 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.3.0)
     netrc (0.11.0)
-    nokogiri (1.15.4-arm64-darwin)
+    nokogiri (1.15.5-arm64-darwin)
       racc (~> 1.4)
-    racc (1.7.2)
+    racc (1.7.3)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    ruby-openai (5.2.0)
-      event_stream_parser (>= 0.3.0, < 1.0.0)
+    ruby-openai (6.3.1)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
       faraday (>= 1)
       faraday-multipart (>= 1)
     ruby2_keywords (0.0.5)
@@ -68,9 +67,6 @@ GEM
       faraday (~> 2.0)
       faraday-multipart (~> 1.0)
       zeitwerk (~> 2.6)
-    unf (0.1.4)
-      unf_ext
-    unf_ext (0.0.8.2)
     zeitwerk (2.6.12)
 
 PLATFORMS
@@ -81,7 +77,7 @@ DEPENDENCIES
   genius
   nokogiri
   rest-client
-  ruby-openai (~> 5.2.0)
+  ruby-openai (~> 6.3.1)
   similar_text
   telegram-bot-ruby
 
@@ -89,4 +85,4 @@ RUBY VERSION
    ruby 3.2.2p53
 
 BUNDLED WITH
-   2.4.19
+   2.4.22
