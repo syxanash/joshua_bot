@@ -9,7 +9,7 @@ class AiHandler
     @recognize_plugins = BotConfig.config['openai']['recognize_plugins']
     @personality = File.read(BotConfig.config['openai']['personality_file'])
     @plugins_list_prompt_segment = ''
-    @chat_history = []
+    @chat_prompt_history = []
     @text_to_command_training = [
       {
         role: 'system',
@@ -46,6 +46,10 @@ class AiHandler
         end
       end
 
+      @text_to_command_training += [
+        { role: 'user', content: 'Let\'s start a new conversation' }
+      ]
+
       @plugins_list_prompt_segment = "Joshua can also reply just with the following commands: #{first_example_plugin_commands.join(' ')}"
     end
   end
@@ -56,6 +60,11 @@ class AiHandler
     matched_plugin = false
     nested_matched_plugin = false
     response_text = ''
+    chat_prompt_header = <<~PROMPT
+You are Joshua a helpful chatbot who enjoys chatting with any human who interacts with him.
+#{@personality}#{@plugins_list_prompt_segment.empty? ? '' : "\n#{@plugins_list_prompt_segment}\n"}
+PROMPT
+    .chomp
 
     # if user sends voice message use whisper to transcribe it
     # and then use the text for interpreting plugin commands or chatgpt interaction
@@ -80,7 +89,7 @@ class AiHandler
       message_text = transcription
     end
 
-    @chat_history.push(
+    @chat_prompt_history.push(
       {
         role: 'user',
         content: message_text
@@ -108,13 +117,13 @@ class AiHandler
     end
 
     if !matched_plugin || !@recognize_plugins
-      chat_header = [
+      chat_prompt_system = [
         {
           role: 'system',
-          content: prompt_header_setup
+          content: chat_prompt_header
         }
       ]
-      combined_conversation = chat_header + @chat_history
+      combined_conversation = chat_prompt_system + @chat_prompt_history
 
       Logging.log.info 'Sending chat conversation to OpenAI...'
       Logging.log.info "Chat prompt sent:\n#{combined_conversation}" if BotConfig.config['openai']['log_prompts']
@@ -123,8 +132,12 @@ class AiHandler
 
       response_text = send_chat_prompt(combined_conversation)
 
+      Logging.log.info "Response received: #{response_text}"
+
       if response_text.match?(%r{.*?(\/.*?)$})
         possible_command = response_text.match(%r{.*?(\/.*?)$})
+        bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
+
         nested_matched_plugin = PluginHandler.handle(bot, user_message, possible_command[1], false)
       end
 
@@ -133,16 +146,17 @@ class AiHandler
       end
     end
 
-    @chat_history.push(
+    @chat_prompt_history.push(
       {
         role: 'assistant',
         content: response_text
       }
     )
 
-    # the number two represents an question by user + answer by chatgpt
-    # thus we remove one object for role user and another for role assistant
-    2.times { @chat_history.shift } if (@chat_history.size / 2) > BotConfig.config['openai']['max_interaction_history']
+    # the number two represents a couple of question (user) answer (assistant)
+    if (@chat_prompt_history.size / 2) > BotConfig.config['openai']['max_interaction_history']
+      2.times { @chat_prompt_history.shift }
+    end
   rescue EmptyVoiceMessageException
     Logging.log.error 'Received empty transcription from OpenAI!'
     bot.api.send_message(
@@ -194,14 +208,5 @@ class AiHandler
     )
 
     response.dig('choices', 0, 'message', 'content')
-  end
-
-  def prompt_header_setup
-    generated_prompt = <<~PROMPT
-You are Joshua a helpful chatbot who enjoys chatting with any human who interacts with him.
-#{@personality}#{@plugins_list_prompt_segment.empty? ? '' : "\n#{@plugins_list_prompt_segment}\n"}
-PROMPT
-
-    generated_prompt.chomp
   end
 end
