@@ -2,6 +2,7 @@ class PluginHandler
   def self.handle(bot, user_message, message_text, show_help = true)
     bot_username = bot.api.getMe['result']['username']
     plugin_triggered = false
+    stop_command = '/cancel'
 
     session_buffer = {
       plugin: '',
@@ -24,6 +25,16 @@ class PluginHandler
 
     Logging.log.info "Trying to match \"#{message_text}\" with a plugin for #{user_message.from.first_name}, in #{user_message.chat.id}"
 
+    if message_text == stop_command && !session_buffer['is_open']
+      Logging.log.warn 'Cancel command was invoked while no command required input.'
+      bot.api.send_message(
+        chat_id: user_message.chat.id,
+        text: 'Nothing was cancelled...'
+      )
+
+      plugin_triggered = true
+    end
+
     AbsPlugin.descendants.each do |lib|
       # for each message create an instance of the plugin library
       plugin = lib.new
@@ -31,7 +42,7 @@ class PluginHandler
       plugin.bot = bot
       plugin.message = user_message
       plugin.buffer_file_name = buffer_file_name
-      plugin.stop_command = '/cancel'
+      plugin.stop_command = stop_command
 
       plugin_name = plugin.class.name
 
