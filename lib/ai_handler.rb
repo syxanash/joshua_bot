@@ -134,8 +134,10 @@ PROMPT
 
       Logging.log.info "Response received: #{response_text}"
 
-      if response_text.match?(%r{.*?(\/.*?)$})
-        possible_command = response_text.match(%r{.*?(\/.*?)$})
+      if response_text.match?(%r{.*(\/[a-zA-Z]*?)$})
+        Logging.log.info 'Matched a command in the reply from OpenAI'
+
+        possible_command = response_text.match(%r{.*(\/[a-zA-Z]*?)$})
         bot.api.send_message(chat_id: user_message.chat.id, text: response_text)
 
         nested_matched_plugin = PluginHandler.handle(bot, user_message, possible_command[1], false)
