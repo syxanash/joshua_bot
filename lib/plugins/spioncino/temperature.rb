@@ -5,12 +5,11 @@ class Temperature < AbsPlugin
 
   def examples
     [
-      { command: '/temperature', description: 'get the temperature of the CPU' }
+      { command: '/temperature', description: 'get the temperature of the room' }
     ]
   end
 
   def do_stuff(_match_results)
-    output = "My CPU temperature is currently: #{`vcgencmd measure_temp | grep  -o -E '[[:digit:]].*'`}"
-    bot.api.send_message(chat_id: message.chat.id, text: output)
+    bot.api.send_message(chat_id: message.chat.id, text: `python utils/temperature.py`)
   end
 end
