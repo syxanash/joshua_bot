@@ -5,7 +5,7 @@ class MessageHandler
     @password_enabled = !@bot_password.empty?
     @chat_id_authenticated = {}
     @users_authenticated = []
-    @ssh_connections = ssh_hosts
+    @ssh_connections = []
   end
 
   def handle(bot, user_message)
