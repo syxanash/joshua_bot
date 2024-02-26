@@ -94,7 +94,7 @@ It's a method used to *initialize* class variables and other settings used by th
 
 This method should return the **regular expression** used to match a command which the bot will interpret. For instance:
 
-```
+```rb
 def command
   /^\/fortune$/
 end
@@ -102,7 +102,7 @@ end
 
 In this case the plugin will be activated upon entering the command `/fortune`. A slightly more complex command could be instad:
 
-```
+```rb
 def command
   /(^\/takephoto$|photo)/
 end
@@ -171,7 +171,7 @@ When a bot is protected by **password** you can execute a sequence of commands a
 
 For example:
 
-```
+```json
   "startup_commands": ["/diceroll 12", "/ping", "/morra"]
 ```
 
