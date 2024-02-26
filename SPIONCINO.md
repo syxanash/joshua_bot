@@ -68,7 +68,7 @@ Command  | Description
 ## Who is Home?
 
 Out of the box Spioncino folder will contain a plugin called `/whoishome`. This plugin lists the devices connected to the network the bot is running from. It uses the tool `arp-scan` in order to perform the scan of the subnet. You can also specify a file which contains a list of aliases for each address. The file should be in the following format:
-```
+```json
 [
     {
         "name": "my-flatmate-phone",
