@@ -1,6 +1,6 @@
 class PluginHandler
   def self.handle(bot, user_message, message_text, show_help = true)
-    bot_username = bot.api.getMe['result']['username']
+    bot_username = bot.api.getMe.username
     plugin_triggered = false
     stop_command = '/cancel'
 

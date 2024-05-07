@@ -2,7 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     base64 (0.2.0)
-    concurrent-ruby (1.2.2)
+    bigdecimal (3.1.8)
+    concurrent-ruby (1.2.3)
     domain_name (0.6.20231109)
     dry-core (1.0.1)
       concurrent-ruby (~> 1.0)
@@ -17,7 +18,8 @@ GEM
       dry-types (>= 1.7, < 2)
       ice_nine (~> 0.11)
       zeitwerk (~> 2.6)
-    dry-types (1.7.1)
+    dry-types (1.7.2)
+      bigdecimal (~> 3.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.0)
       dry-inflector (~> 1.0)
@@ -64,12 +66,12 @@ GEM
       faraday-multipart (>= 1)
     ruby2_keywords (0.0.5)
     similar_text (0.0.4)
-    telegram-bot-ruby (1.0.0)
+    telegram-bot-ruby (2.0.0)
       dry-struct (~> 1.6)
       faraday (~> 2.0)
       faraday-multipart (~> 1.0)
       zeitwerk (~> 2.6)
-    zeitwerk (2.6.12)
+    zeitwerk (2.6.13)
 
 PLATFORMS
   arm64-darwin-22
@@ -82,7 +84,7 @@ DEPENDENCIES
   rest-client
   ruby-openai (~> 7.0.1)
   similar_text
-  telegram-bot-ruby
+  telegram-bot-ruby (~> 2.0)
 
 RUBY VERSION
    ruby 3.3.0p0

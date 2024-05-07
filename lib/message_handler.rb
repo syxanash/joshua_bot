@@ -63,7 +63,7 @@ class MessageHandler
     matched_simple_commands = check_simple_commands(user_message, message_text) unless matched_plugin
 
     if !matched_simple_commands && !matched_plugin
-      return if user_message.chat.type == 'group' && !message_text.include?(@bot.api.getMe['result']['username'])
+      return if user_message.chat.type == 'group' && !message_text.include?(@bot.api.getMe.username)
 
       @ai_handler.ask(@bot, user_message, message_text)
     end
@@ -96,7 +96,7 @@ class MessageHandler
   end
 
   def check_simple_commands(user_message, message_text)
-    bot_username = @bot.api.getMe['result']['username']
+    bot_username = @bot.api.getMe.username
 
     message_matched = true
 
