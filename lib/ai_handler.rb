@@ -58,6 +58,7 @@ class AiHandler
     return if @api_token.empty?
 
     matched_plugin = false
+    user_sent_image = false
     nested_matched_plugin = false
     response_text = ''
     chat_prompt_header = <<~PROMPT
@@ -89,6 +90,28 @@ PROMPT
       message_text = transcription
     end
 
+    unless user_message.photo.nil?
+      file_url = JSON.parse(RestClient.get("https://api.telegram.org/bot#{BotConfig.config['token']}/getFile?file_id=#{user_message.photo[-1].file_id}"))
+      photo_file_url = "https://api.telegram.org/file/bot#{BotConfig.config['token']}/#{file_url['result']['file_path']}"
+
+      message_text = []
+
+      if user_message.caption.nil?
+        message_text.push({ type: 'text', text: "What's in this image?" })
+      else
+        message_text.push({ type: 'text', text: user_message.caption })
+      end
+
+      message_text.push({
+        type: 'image_url',
+        image_url: {
+          url: photo_file_url
+        }
+      })
+
+      user_sent_image = true
+    end
+
     @chat_prompt_history.push(
       {
         role: 'user',
@@ -96,7 +119,7 @@ PROMPT
       }
     )
 
-    if @recognize_plugins
+    if @recognize_plugins && !user_sent_image
       user_command_request = @text_to_command_training.clone
       user_command_request.push(
         {
@@ -130,7 +153,11 @@ PROMPT
 
       bot.api.sendChatAction(chat_id: user_message.chat.id, action: 'typing')
 
-      response_text = send_chat_prompt(combined_conversation)
+      response_text = if user_sent_image
+                        send_chat_image(combined_conversation)
+                      else
+                        send_chat_prompt(combined_conversation)
+                      end
 
       Logging.log.info "Response received: #{response_text}"
 
@@ -188,10 +215,22 @@ PROMPT
     response['text']
   end
 
+  def send_chat_image(conversation)
+    response = @client.chat(
+      parameters: {
+        model: 'gpt-4o',
+        messages: conversation,
+        temperature: 0.5
+      }
+    )
+
+    response.dig('choices', 0, 'message', 'content')
+  end
+
   def send_chat_prompt(conversation)
     response = @client.chat(
       parameters: {
-        model: 'gpt-4',
+        model: 'gpt-4-turbo',
         messages: conversation,
         temperature: 0.5
       }
